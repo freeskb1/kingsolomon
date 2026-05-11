@@ -537,7 +537,9 @@
 
       <div class="action-row">
         <button id="drawTopicBtn" class="btn btn-primary">🎲 주제 뽑기</button>
+        <button id="rerollTopicBtn" class="btn btn-ghost hidden">🔄 다른 주제로</button>
         <button id="assignBtn" class="btn btn-gold hidden">⚔️ 입장 배정</button>
+        <button id="reshuffleBtn" class="btn btn-ghost hidden">🔀 입장 다시 섞기</button>
         <button id="finishBtn" class="btn btn-ghost hidden">토론 종료 · 다음 왕 선택</button>
       </div>
 
@@ -1048,6 +1050,8 @@ function beginRound(){
   show($('drawTopicBtn'));
   hide($('assignBtn'));
   hide($('finishBtn'));
+  hide($('rerollTopicBtn'));
+  hide($('reshuffleBtn'));
 
   $('roundScreen').classList.remove('fade-in');
   void $('roundScreen').offsetWidth;
@@ -1164,6 +1168,8 @@ function drawTopic(){
   renderTopic();
   hide($('drawTopicBtn'));
   show($('assignBtn'));
+  show($('rerollTopicBtn'));
+  updateRerollButton();
 }
 
 function pickUnusedTopic(){
@@ -1264,12 +1270,14 @@ function updateSideLabels(){
    팀 배정
 ============================================================ */
 $('assignBtn').addEventListener('click', assignTeams);
+$('rerollTopicBtn').addEventListener('click', rerollTopic);
+$('reshuffleBtn').addEventListener('click', reshuffleTeams);
 
-function assignTeams(){
+// 내부 헬퍼: 좌·우 진영 랜덤 배정 (state 갱신 + UI 렌더만)
+function shuffleAndAssignTeams(){
   const king = state.participants[state.kingIndex];
   const others = state.participants.filter(p => p !== king);
   const shuffled = shuffle(others);
-
   const half = Math.ceil(shuffled.length / 2);
   let left, right;
   if (Math.random() < 0.5){
@@ -1281,11 +1289,41 @@ function assignTeams(){
   }
   state.leftTeam = left;
   state.rightTeam = right;
-  state.phase = 'round-assigned';
   renderTeams(true);
+}
 
+function assignTeams(){
+  shuffleAndAssignTeams();
+  state.phase = 'round-assigned';
   hide($('assignBtn'));
   show($('finishBtn'));
+  show($('reshuffleBtn'));
+}
+
+// 같은 멤버 그대로, 좌·우만 다시 랜덤 배정
+function reshuffleTeams(){
+  shuffleAndAssignTeams();
+  // 버튼 상태 변경 없음 — 현재 단계 유지
+}
+
+// 왕/멤버/능력 그대로, 주제만 새로 뽑기
+// 이미 뽑힌(=사용 처리된) 주제는 다시 나오지 않음
+function rerollTopic(){
+  const topic = pickUnusedTopic();
+  if (!topic){
+    alert('이번 게임에서 더 뽑을 수 있는 주제가 없습니다.');
+    $('rerollTopicBtn').disabled = true;
+    return;
+  }
+  state.currentTopic = topic;
+  renderTopic();
+  updateRerollButton();
+}
+
+function updateRerollButton(){
+  const oxLeft = OX_TOPICS.length - state.usedOxIdx.size;
+  const chLeft = CHOICE_TOPICS.length - state.usedChoiceIdx.size;
+  $('rerollTopicBtn').disabled = (oxLeft + chLeft <= 0);
 }
 
 function renderTeams(animate = false){
