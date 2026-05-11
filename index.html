@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>킹 솔로몬 — 밸런스 토론</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<style>
+  /* 기본 리셋 */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  button { font: inherit; cursor: pointer; border: 0; background: transparent; color: inherit; }
+  input { font: inherit; }
+  h1, h2, h3, p { margin: 0; }
+
+  :root {
+    --bg: #f7f7f5;
+    --ink: #0f172a;
+    --ink-soft: #334155;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --card: #ffffff;
+    --gold: #b08a3e;
+    --gold-dark: #8e6a28;
+    --gold-soft: #f0e6cf;
+    --gold-bg: #fffaef;
+    --left: #1e3a5f;
+    --right: #7a2e2e;
+    --left-soft: #e8eef5;
+    --right-soft: #f5e8e8;
+    --left-border: #c8d6e6;
+    --right-border: #e6c8c8;
+    --red: #dc2626;
+  }
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    letter-spacing: -0.01em;
+    overflow: hidden;
+  }
+  .serif { font-weight: 700; }
+  .keep-all { word-break: keep-all; }
+
+  /* 레이아웃 */
+  #app { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
+  header.app-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 32px;
+    border-bottom: 1px solid rgba(226,232,240,0.7);
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    flex-shrink: 0;
+  }
+  .logo-wrap { display: flex; align-items: center; gap: 12px; }
+  .logo-mark {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: #0f172a; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .logo-title { font-weight: 700; font-size: 18px; letter-spacing: -0.02em; }
+  .logo-subtitle { font-size: 12px; color: var(--muted); margin-top: -2px; }
+  .header-right { display: flex; align-items: center; gap: 8px; }
+
+  main.app-main { flex: 1; overflow: hidden; position: relative; }
+  .screen {
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    inset: 0;
+  }
+  .screen.hidden { display: none !important; }
+  .hidden { display: none !important; }
+
+  /* 셋업 화면 */
+  #setupScreen { overflow: auto; }
+  .setup-wrap { max-width: 768px; margin: 0 auto; padding: 48px 32px; }
+  .setup-hero { text-align: center; margin-bottom: 40px; }
+  .setup-hero .crown {
+    font-size: 64px; margin-bottom: 16px;
+    animation: crownFloat 3s ease-in-out infinite;
+    display: inline-block;
+  }
+  .setup-hero h1 {
+    font-size: 44px; font-weight: 700; letter-spacing: -0.025em;
+    margin-bottom: 12px;
+  }
+  .setup-hero p { color: var(--muted); line-height: 1.65; }
+
+  .name-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .name-input-wrap { position: relative; }
+  .name-input {
+    background: #fff; border: 1px solid var(--line);
+    border-radius: 12px; padding: 12px 16px;
+    font-size: 16px; width: 100%;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .name-input:focus {
+    outline: none;
+    border-color: var(--ink);
+    box-shadow: 0 0 0 3px rgba(15,23,42,.08);
+  }
+  .name-remove {
+    position: absolute; right: 8px; top: 50%;
+    transform: translateY(-50%);
+    color: #cbd5e1;
+    padding: 4px; border-radius: 6px;
+    transition: color .15s, background .15s;
+    display: flex;
+  }
+  .name-remove:hover { color: var(--red); background: #fef2f2; }
+
+  /* 라운드 화면 */
+  #roundScreen { display: flex; flex-direction: column; padding: 24px 32px; gap: 20px; }
+  .top-grid { display: grid; grid-template-columns: 4fr 8fr; gap: 20px; flex-shrink: 0; }
+  .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1; min-height: 0; }
+  .action-row { display: flex; align-items: center; justify-content: center; gap: 12px; flex-shrink: 0; }
+
+  .slide-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    box-shadow: 0 1px 0 rgba(15,23,42,.02), 0 12px 40px -20px rgba(15,23,42,.18);
+    border-radius: 18px;
+  }
+
+  /* 왕 카드 */
+  .king-card {
+    background: linear-gradient(180deg, #fffdf6 0%, #fbf3df 100%);
+    border: 1px solid #ead9a8;
+    border-radius: 18px;
+    padding: 20px;
+    height: 100%;
+    display: flex; flex-direction: column;
+  }
+  .king-name {
+    font-size: 34px; font-weight: 800; letter-spacing: -0.02em;
+    color: #1f1500; line-height: 1.1; margin-bottom: 16px;
+  }
+  .ability-hint {
+    font-size: 11px; color: rgba(120, 53, 15, 0.7);
+    font-weight: 600; margin-bottom: 8px; line-height: 1.5;
+  }
+  .ability-list { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+
+  .ability-card {
+    background: #fffaf0;
+    border: 1px solid #ead9a8;
+    border-radius: 12px;
+    padding: 10px 12px;
+  }
+  .ability-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 6px; gap: 8px;
+  }
+  .ability-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    background: var(--gold-soft);
+    color: var(--gold-dark);
+    white-space: nowrap;
+  }
+  .ability-text {
+    font-size: 14px; font-weight: 600;
+    color: #422006; line-height: 1.4;
+  }
+  .timer-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 12px; font-weight: 700;
+    background: #fff; color: var(--gold-dark);
+    border: 1px solid #ead9a8;
+    transition: all .12s;
+    white-space: nowrap;
+    min-width: 76px;
+    justify-content: center;
+  }
+  .timer-btn:hover { background: var(--gold-soft); }
+  .timer-btn.running {
+    background: var(--gold-dark); color: #fff; border-color: var(--gold-dark);
+  }
+  .timer-btn.done {
+    background: #fecaca; color: #991b1b; border-color: #f87171;
+    animation: timerPulse 0.6s ease-in-out 3;
+  }
+  @keyframes timerPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+  }
+
+  /* 질문 슬라이드 */
+  .topic-slide {
+    padding: 32px;
+    height: 100%;
+    display: flex; flex-direction: column; justify-content: center;
+    position: relative;
+    border-radius: 18px;
+  }
+  .topic-badge-wrap {
+    position: absolute; top: 20px; left: 24px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .topic-empty {
+    text-align: center; color: #94a3b8;
+  }
+  .topic-empty .icon { font-size: 48px; margin-bottom: 12px; opacity: 0.4; }
+  .topic-content { text-align: center; padding: 0 24px; }
+  .topic-question {
+    font-size: clamp(28px, 3.4vw, 44px);
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--ink);
+  }
+  .topic-choices {
+    font-size: clamp(22px, 2.6vw, 32px);
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--ink-soft);
+    margin-top: 16px;
+  }
+  .topic-choices .vs {
+    display: inline-block;
+    margin: 0 14px;
+    color: #94a3b8;
+    font-weight: 800;
+    font-size: 0.7em;
+    letter-spacing: 0.18em;
+    vertical-align: 2px;
+  }
+  .topic-choices .choice-left { color: var(--left); }
+  .topic-choices .choice-right { color: var(--right); }
+
+  /* 좌우 진영 */
+  .side-column {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 18px;
+    height: 100%;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .side-left { border-top: 3px solid var(--left); }
+  .side-right { border-top: 3px solid var(--right); }
+  .side-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px; flex-shrink: 0;
+  }
+  .side-title {
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+  }
+  .side-left .side-title { color: var(--left); }
+  .side-right .side-title { color: var(--right); }
+  .side-tag {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    color: #94a3b8;
+  }
+  .team-list {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    align-content: flex-start;
+    overflow: auto;
+    flex: 1;
+  }
+  .name-pill {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 17px;
+    white-space: nowrap;
+  }
+  .name-pill.left { background: var(--left-soft); border-color: var(--left-border); color: var(--left); }
+  .name-pill.right { background: var(--right-soft); border-color: var(--right-border); color: var(--right); }
+
+  /* 칩 / 배지 */
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--muted);
+  }
+  .chip.gold { background: #fff5db; border-color: #ead9a8; color: var(--gold-dark); }
+  .chip.indigo { background: #eef2ff; border-color: #c7d2fe; color: #3730a3; }
+  .chip.amber { background: #fef3c7; border-color: #fcd34d; color: #92400e; }
+  .round-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #fff; border: 1px solid var(--line);
+    padding: 4px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .round-badge.hidden { display: none; }
+
+  /* 버튼 */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 12px 20px; border-radius: 12px;
+    font-weight: 600; font-size: 15px;
+    transition: all .15s ease;
+    border: 1px solid transparent;
+    user-select: none;
+  }
+  .btn:disabled { opacity: .35; cursor: not-allowed; }
+  .btn-primary { background: var(--ink); color: #fff; }
+  .btn-primary:hover:not(:disabled) { background: #1e293b; transform: translateY(-1px); }
+  .btn-ghost {
+    background: #fff; color: var(--ink); border-color: var(--line);
+    font-size: 14px; padding: 10px 14px;
+  }
+  .btn-ghost:hover:not(:disabled) { background: #f1f5f9; }
+  .btn-gold {
+    background: linear-gradient(180deg, #c79a4a 0%, #a67a30 100%);
+    color: #fff;
+    border-color: #8e6a28;
+    box-shadow: 0 4px 12px -4px rgba(166,122,48,.5);
+  }
+  .btn-gold:hover:not(:disabled) { filter: brightness(1.06); transform: translateY(-1px); }
+  .btn-lg { font-size: 16px; padding: 14px 28px; }
+  .btn.hidden { display: none; }
+
+  /* 모달 / 오버레이 */
+  .modal {
+    position: fixed; inset: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal.hidden { display: none !important; }
+  .backdrop {
+    position: absolute; inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .modal-content {
+    position: relative;
+    max-width: 560px; width: 92%;
+    padding: 28px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    box-shadow: 0 30px 80px -20px rgba(0,0,0,.3);
+  }
+  .modal-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .modal-desc { font-size: 14px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
+  .picker-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    max-height: 50vh; overflow: auto; padding-right: 4px;
+  }
+  .picker-item {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-weight: 600; font-size: 16px;
+    background: #fff;
+    transition: all .15s;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+  }
+  .picker-item:hover { border-color: #94a3b8; background: #f8fafc; }
+  .picker-item.selected {
+    border-color: var(--gold);
+    background: var(--gold-bg);
+    box-shadow: 0 0 0 3px rgba(176,138,62,.15);
+  }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
+
+  /* 전환 슬라이드 */
+  #transitionOverlay { z-index: 60; }
+  .transition-card {
+    position: relative;
+    background: #fff;
+    border-radius: 24px;
+    padding: 56px 80px;
+    border: 1px solid var(--line);
+    box-shadow: 0 30px 80px -20px rgba(0,0,0,.3);
+    text-align: center;
+  }
+  .transition-card .crown { font-size: 56px; margin-bottom: 12px; }
+  .transition-eyebrow {
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.25em; color: rgba(180,83,9,0.8);
+    margin-bottom: 12px;
+  }
+  .transition-prefix, .transition-suffix {
+    font-size: 20px; color: var(--muted); font-weight: 600;
+  }
+  .transition-name {
+    font-size: 42px; font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 4px 0;
+  }
+
+  /* 애니메이션 */
+  .fade-in { animation: fadeIn .45s ease both; }
+  .slide-up { animation: slideUp .5s cubic-bezier(.2,.7,.2,1) both; }
+  .pop { animation: pop .35s cubic-bezier(.2,.9,.3,1.2) both; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pop { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: scale(1); } }
+  @keyframes crownFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+
+  /* 의사 전체화면 */
+  body.pseudo-fs {
+    position: fixed; inset: 0;
+    width: 100vw; height: 100vh;
+    overflow: hidden; z-index: 9999;
+  }
+  body.pseudo-fs #app { background: var(--bg); }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+
+  .footer-tip { text-align: center; font-size: 12px; color: #94a3b8; margin-top: 16px; }
+  .text-center { text-align: center; }
+  .mt-10 { margin-top: 40px; }
+  .mb-1 { margin-bottom: 4px; }
+
+  .setup-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .setup-card { padding: 32px; }
+  .setup-card h2 { font-size: 18px; font-weight: 700; }
+  .setup-meta { font-size: 12px; color: var(--muted); }
+  .setup-meta.error { color: var(--red); }
+  .setup-card-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 20px;
+  }
+
+  @media (max-width: 1024px) {
+    .top-grid { grid-template-columns: 1fr; }
+    .king-card { height: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header class="app-header">
+    <div class="logo-wrap">
+      <div class="logo-mark">👑</div>
+      <div>
+        <div class="logo-title">킹 솔로몬</div>
+        <div class="logo-subtitle">밸런스 토론 게임</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <span id="roundBadge" class="round-badge hidden">ROUND <span id="roundNum">1</span></span>
+      <button id="resetBtn" class="btn btn-ghost hidden" title="처음으로">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+        처음으로
+      </button>
+      <button id="fsBtn" class="btn btn-ghost" title="전체화면">
+        <svg id="fsIconOn" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9V3h6"/><path d="M21 9V3h-6"/><path d="M3 15v6h6"/><path d="M21 15v6h-6"/></svg>
+        <svg id="fsIconOff" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M9 3H3v6"/><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M15 21h6v-6"/></svg>
+        <span id="fsLabel">전체화면</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <section id="setupScreen" class="screen">
+      <div class="setup-wrap">
+        <div class="setup-hero fade-in">
+          <div class="crown">👑</div>
+          <h1 class="serif">킹 솔로몬</h1>
+          <p class="keep-all">오늘의 왕이 토론을 다스립니다. 좌·우 진영으로 나뉘어 다섯 가지 주제 위에서 가장 빛난 사람이 다음 왕이 됩니다.</p>
+        </div>
+
+        <div class="slide-card setup-card slide-up">
+          <div class="setup-row">
+            <h2>참여자 명단</h2>
+            <div class="setup-meta">엔터로 다음 칸 · 최소 3명</div>
+          </div>
+          <div id="nameList" class="name-grid"></div>
+          <div class="setup-card-footer">
+            <button id="addNameBtn" class="btn btn-ghost">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+              참여자 추가
+            </button>
+            <div id="nameCount" class="setup-meta">0명</div>
+          </div>
+        </div>
+
+        <div class="text-center mt-10">
+          <button id="startBtn" class="btn btn-primary btn-lg" disabled>
+            게임 시작
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </button>
+          <div class="footer-tip">랜덤으로 첫 왕이 정해집니다</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="roundScreen" class="screen hidden" style="display:none">
+      <div class="top-grid">
+        <div class="king-card">
+          <div style="margin-bottom: 8px;">
+            <span class="chip gold">👑 이번 라운드의 왕</span>
+          </div>
+          <div id="kingName" class="king-name">—</div>
+          <div class="ability-hint keep-all">※ 각 능력은 토론 중 왕이 원할 때 1회씩 사용합니다. 시간이 있는 능력은 ▶ 버튼으로 타이머가 작동합니다.</div>
+          <div id="abilities" class="ability-list"></div>
+        </div>
+
+        <div class="slide-card topic-slide">
+          <div class="topic-badge-wrap">
+            <span id="topicTypeBadge" class="chip" style="display:none"></span>
+          </div>
+          <div id="topicEmpty" class="topic-empty">
+            <div class="icon">💬</div>
+            <div>아래 버튼을 눌러 이번 라운드 토론 주제를 뽑아주세요.</div>
+          </div>
+          <div id="topicContent" class="topic-content keep-all" style="display:none">
+            <div id="topicQuestion" class="topic-question"></div>
+            <div id="topicChoices" class="topic-choices"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button id="drawTopicBtn" class="btn btn-primary">🎲 주제 뽑기</button>
+        <button id="assignBtn" class="btn btn-gold hidden">⚔️ 입장 배정</button>
+        <button id="finishBtn" class="btn btn-ghost hidden">토론 종료 · 다음 왕 선택</button>
+      </div>
+
+      <div class="bottom-grid">
+        <div class="side-column side-left">
+          <div class="side-header">
+            <div class="side-title" id="leftLabel">좌측 진영</div>
+            <div class="side-tag">LEFT</div>
+          </div>
+          <div id="leftTeam" class="team-list"></div>
+        </div>
+        <div class="side-column side-right">
+          <div class="side-header">
+            <div class="side-title" id="rightLabel">우측 진영</div>
+            <div class="side-tag">RIGHT</div>
+          </div>
+          <div id="rightTeam" class="team-list"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="kingPicker" class="modal hidden" style="display:none">
+  <div class="backdrop" id="pickerBackdrop"></div>
+  <div class="modal-content pop">
+    <div class="mb-1"><span class="chip gold">👑 다음 왕 선택</span></div>
+    <h3 class="modal-title">가장 잘한 사람은 누구입니까?</h3>
+    <p class="modal-desc keep-all">현재 왕이 직접 골라주세요. 임명된 사람은 다음 라운드의 왕이 됩니다.</p>
+    <div id="pickerList" class="picker-grid"></div>
+    <div class="modal-actions">
+      <button id="pickerCancel" class="btn btn-ghost">취소</button>
+      <button id="pickerConfirm" class="btn btn-gold" disabled>왕으로 임명</button>
+    </div>
+  </div>
+</div>
+
+<div id="transitionOverlay" class="modal hidden" style="display:none">
+  <div class="backdrop"></div>
+  <div class="transition-card pop">
+    <div class="crown" style="animation: crownFloat 3s ease-in-out infinite;">👑</div>
+    <div class="transition-eyebrow">NEXT KING</div>
+    <div class="transition-prefix">다음 왕은</div>
+    <div id="transitionName" class="transition-name">—</div>
+    <div class="transition-suffix">입니다</div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ============================================================
+   질문 풀
+============================================================ */
+const OX_TOPICS = [
+  // ── 기존: 일상 / 매너 ──
+  "남자 아이돌의 겨드랑이 털 제모는 필수이다.",
+  "같이 먹는 메뉴 위의 계란 노른자를 물어보지 않고 터뜨리는 건 실례이다.",
+  "붕어빵은 머리부터 먹어야 한다.",
+  "지인 결혼식에 5만원을 부조하고 가족 전체가 가서 식사하는 것은 진상짓이다.",
+  "친구에게 선물 받은 로또가 1등에 당첨되었다면 선물한 친구에게 절반을 주어야 한다.",
+  "베스킨라빈스에서 파인트를 선택할 때 맛을 중복으로 담으면 안된다.",
+  "직장의 멘토같은 상사의 결혼식과 절친의 결혼식이 겹친다면 직장 상사의 결혼식에 가야한다.",
+  "친한 직장동료의 치약은 허락 없이 사용해도 괜찮다.",
+  "사내 냉장고에 이름 없는 음식은 공용으로 보아야 한다.",
+  "‘편하게 말씀하세요’라는 상사의 말을 그대로 받아들이면 안된다.",
+  "직장 동료의 SNS는 팔로우 하지 않는 것이 예의이다.",
+  "마트에서는 같은 시식 코너를 두 번 가면 안된다.",
+  "공중화장실에서 큰 일을 볼 때는, 쌀 때마다 바로바로 물을 내려줘야한다.",
+  "노래방에서 남이 선곡한 노래를 다른 마이크로 부르면 안된다.",
+  "직장동료들을 초청해서 집들이를 할 때 배달음식은 그릇에 옮겨 담아야 한다.",
+  "친구와 먹을 치킨을 주문할 때 순살인지 뼈인지를 물어보지 않고 시키면 안된다.",
+  "단톡방에서 나간 사람은 다시 초대하지 않는 것이 예의이다.",
+  "식사 시 젓가락 세팅은 막내가 해야 한다.",
+  "생일선물로 현금은 정성이 없는 것이다.",
+  "모임 정산 시 술 안 먹은 사람은 술값을 제외해준다.",
+
+  // ── 기존: 연인 / 결혼 ──
+  "애인 앞에서 다른 이성의 외모를 칭찬하는 것은 실례이다.",
+  "애인과 누드비치에 가는 일은 절대 해서는 안된다.",
+  "통금이 8시인 사람과는 연애하지 않는 것이 좋다.",
+  "마음에 드는 상대라면 만난 지 일주일 만에 결혼 날짜를 잡아도 문제되지 않는다.",
+  "절친의 결혼식에 축의금 3만원을 내는 것은 사실 절친이 아니라는 뜻이다.",
+  "애인의 생일 하루 전 헤어졌어도 준비한 생일선물은 전달해야 한다.",
+  "새로운 연애를 시작했다면 전 애인의 사진은 모두 삭제해야 한다.",
+  "룸메이트가 있는데 친구가 없을 때 애인을 불러 집 데이트를 하는 것은 실례이다.",
+  "친구의 애인을 호칭 닉네임으로 저장하는 건 이상하다.",
+  "연인끼리 SNS 비밀번호를 공유하는 것은 사랑의 증거다.",
+  "연인의 휴대폰을 몰래 보는 것은 어떤 이유로도 정당화될 수 없다.",
+  "연인이 이성 친구와 단둘이 만나는 건 무조건 막아야 한다.",
+  "100일, 200일 같은 작은 기념일을 챙기지 않으면 사랑이 식은 것이다.",
+  "연인 관계에서 위치 공유는 필수다.",
+  "결혼 상대의 부모님이 마음에 안 들면 결혼을 다시 고민해야 한다.",
+  "사귀는 사이라면 상대방의 친구 모임에 함께 가는 것이 예의다.",
+  "결혼식 청첩장은 모바일이면 충분하다.",
+  "연인의 전 애인 사진이 SNS에 남아있다면 삭제를 요구할 수 있다.",
+  "사귀기 전 썸 단계에서는 다른 사람과 동시에 썸을 타도 괜찮다.",
+  "결혼 전 통장 잔고는 서로에게 공개해야 한다.",
+  "부부싸움 후 친정/본가에 가서 자는 것은 잘못된 행동이다.",
+  "연인의 친한 이성 친구와는 친해지지 않는 것이 좋다.",
+  "첫 데이트 비용은 먼저 사귀자고 한 사람이 내는 것이 예의다.",
+  "연인 사이에 비밀이 있어서는 안 된다.",
+  "결혼식은 양가 부모님이 원하는 방식이 우선이다.",
+  "데이트 중에 휴대폰을 자주 보는 것은 매너 없는 행동이다.",
+  "연인이 자신보다 친구를 더 자주 만나는 것은 서운한 일이다.",
+  "썸 단계에서 먼저 고백하는 쪽이 손해다.",
+  "결혼식 사회는 무조건 가까운 친구에게 맡기는 것이 정답이다.",
+  "연인의 친구들 앞에서 애정 표현을 하는 것은 매너 없는 행동이다.",
+
+  // ── 추가: 공공장소 / 매너 ──
+  "단톡방 공지에는 좋아요 표시를 무조건 찍어줘야 한다.",
+  "퇴근 10분 전부터 퇴근 준비 하는 건 잘못이다.",
+  "엘리베이터에서 마주친 이웃에게 인사 안 하는 건 무례한 행동이다.",
+  "식당에서 종업원을 “이모”라고 부르는 건 매너 없는 행동이다.",
+  "배달 음식 받을 때 현관 밖까지 나가는 게 예의다.",
+  "영화관에서 팝콘 소리내며 먹는 건 민폐다.",
+  "헬스장에서 운동 기구 한 시간 독점하는 건 진상이다.",
+  "도서관에서 음료수 마시는 건 비매너다.",
+  "음식점에서 셀카 찍는 건 다른 손님에게 민폐다.",
+
+  // ── 추가: 디지털 / SNS ──
+  "카톡 답장은 24시간 이내가 매너다.",
+  "회의 중 핸드폰 진동은 무음과 같은 매너다.",
+  "새벽 1시 이후 카톡은 보내지 않는 게 매너다.",
+  "친구의 아기 사진을 동의 없이 SNS에 올리는 건 큰 실례다.",
+
+  // ── 추가: 직장 ──
+  "점심시간에 혼자 밥 먹는 동료는 신경 써줘야 한다.",
+  "사내 메신저는 퇴근 후 보지 않아도 된다.",
+  "연차 사용 시 사유를 묻는 건 부당한 행위다.",
+  "회식 후 택시비는 회사가 내는 게 당연하다.",
+  "신입사원이 회의에서 의견 내는 건 건방진 행동이다.",
+  "회사 동료끼리 연애하는 건 위험한 선택이다.",
+  "출퇴근 시 마주친 상사에게 인사하지 않는 건 큰 결례다.",
+  "회의 끝나기 5분 전 화장실 가는 건 매너 위반이다.",
+
+  // ── 추가: 친구 / 가족 ──
+  "부모님 생신은 음력으로 챙기는 게 정답이다.",
+  "결혼한 형제자매 집에 갈 때 빈손으로 가면 안 된다.",
+  "부모님께 용돈은 매달 정기적으로 드려야 한다.",
+  "친구의 연인이 마음에 안 들면 솔직히 말해주는 게 진짜 친구다.",
+  "결혼 후에도 친구들과 단둘이 여행 가는 건 괜찮다.",
+
+  // ── 추가: 연애 / 결혼 (보강) ──
+  "연인이 옛 연인과 친구로 지내는 건 절대 안 된다.",
+  "데이트 중 다른 이성에게 시선을 두는 건 바람의 시작이다.",
+  "연애 3개월 안에 결혼 얘기 꺼내면 부담스러운 사람이다.",
+  "사귀는 사이에 더치페이는 정 없는 행동이다.",
+
+  // ── 추가: 술자리 / 노래방 / 모임 ──
+  "결혼식 드레스코드는 무조건 지켜야 한다.",
+
+  // ── 추가: 연인 관계 (취향 반영) ──
+  "연인이 회사 회식에서 새벽 3시까지 술 마시고 들어오는 건 이해할 수 있다.",
+  "연인이 이성 친구와 단둘이 영화를 보러 가는 건 괜찮다.",
+  "연인의 휴대폰을 우연히 봤는데 다른 이성과 친근한 대화가 있다면 따져 물어야 한다.",
+  "연인의 옛 SNS 사진 중 다른 이성과 찍은 사진은 내려달라고 할 수 있다.",
+  "연인이 내 친구와 친해지는 것은 환영할 일이다.",
+  "헤어진 연인의 SNS는 무조건 차단하는 게 정답이다.",
+  "연인이 일하는 동안 연락이 두절되어도 이해해줘야 한다.",
+  "연인의 부모가 보내는 카톡에는 24시간 안에 답해야 한다.",
+
+  // ── 추가: 유머·아이스브레이킹 ──
+  "떨어진 음식은 3초 안에 주워 먹으면 깨끗한 음식이다.",
+  "라면에 김치 없이 먹는 사람은 라면 먹을 자격이 없다.",
+  "사진 찍을 때 “김치” 외치는 사람은 시대에 뒤떨어진 사람이다.",
+  "엘리베이터에서 닫힘 버튼을 연타하는 건 비매너다.",
+  "음식 사진 찍느라 일행이 식기 전에 못 먹게 하는 건 죄악이다.",
+  "배달 온 치킨을 셋팅하는 사람을 기다리지 않고 한 조각 먼저 먹는 사람은 의리 없는 사람이다.",
+];
+
+// 선택형: [질문줄, 왼쪽 선택, 오른쪽 선택]
+const CHOICE_TOPICS = [
+  // ── 기존: 일상 / 가치관 ──
+  ["탈모인을 위해 우리 모두는", "전원 삭발", "전원 수영모"],
+  ["지인 SNS는", "맞팔이 예의다", "굳이 안 해도 된다"],
+  ["계획은", "철저해야 편하다", "즉흥이 진짜 재미다"],
+  ["사람은", "바뀐다", "잘 안 바뀐다"],
+  ["집은", "미니멀", "취향 가득 맥시멀"],
+  ["정말 좋아하는 가수의 콘서트", "휴대폰 찍으며 본다", "눈으로만 본다"],
+  ["피자 끝부분(도우)은", "남겨도 된다", "끝까지 먹어야 예의"],
+  ["서운한 감정은", "바로 말해야 한다", "쌓였다가 한 번에 터진다"],
+  ["사람은", "열심히 하는 사람이 멋지다", "잘하는 사람이 멋지다"],
+  ["리더는", "부드러운 리더", "단호한 리더"],
+  ["정리는", "한 번에 몰아서", "틈틈이 조금씩"],
+  ["카톡 웃을 때", "ㅎ", "ㅋ"],
+  ["점 위치를 꼭 골라야 한다면", "이마 정중앙", "코 옆"],
+  ["하품할 때", "참고 이쁘게 한다", "영혼 빠져나가게 크게 한다"],
+  ["목욕탕에 불이 났다", "얼굴 가린다", "아래를 가린다"],
+  ["손에 묻은 라면 국물", "바로 핥는다", "휴지 찾아본다"],
+
+  // ── 기존: 연인 / 결혼 ──
+  ["연락은", "자주가 중요", "내용이 진짜 중요"],
+  ["질투는", "사랑 표현이다", "불안의 표현이다"],
+  ["결혼은", "타이밍이다", "인연이다"],
+  ["연애는", "카톡 고백 받고 사귀기", "고백 안 하는 사람과 사귀기"],
+  ["데이트 비용은", "한 사람이 다 낸다", "칼같이 더치페이"],
+  ["첫 데이트 코스는", "영화관", "분위기 좋은 카페"],
+  ["사랑은", "표현이 전부다", "행동이 전부다"],
+  ["기념일은", "사소한 것도 다 챙긴다", "큰 날만 챙긴다"],
+  ["청혼은", "거창한 이벤트", "둘만의 조용한 순간"],
+  ["결혼식은", "스몰웨딩", "화려한 호텔 결혼식"],
+  ["신혼여행은", "휴양지에서 푹 쉬기", "도시 돌며 빡세게 관광"],
+  ["내 애인이 과거 동거한 사실을 알았다", "상관없다", "상관있다"],
+  ["연인끼리 연락은", "시도 때도 없이 자주", "필요할 때만"],
+  ["싸웠을 때는", "바로 풀고 잔다", "시간 두고 천천히"],
+  ["연인 선물은", "깜짝 서프라이즈", "원하는 거 미리 물어보기"],
+  ["연인의 휴대폰은", "절대 봐선 안 된다", "봐도 괜찮다"],
+  ["결혼 상대 1순위는", "외모", "성격"],
+  ["사랑은", "한 번에 강하게", "천천히 깊게"],
+  ["데이트 장소는", "매번 새로운 곳", "자주 가던 곳"],
+  ["프로포즈는", "남자가 해야 제맛", "누구든 먼저 마음먹은 사람이"],
+  ["신혼집은", "부모님 도움받기", "둘이서만 마련하기"],
+  ["연인 사이 호칭은", "“자기야”", "그냥 이름"],
+  ["애인 SNS는", "공개 커플샷 OK", "비공개로 둔다"],
+  ["연인의 이성 친구는", "관심 끊는다", "친해진다"],
+  ["결혼은", "사랑이 먼저", "조건이 먼저"],
+  ["배우자의 과거 연애사는", "다 알아야 한다", "묻지 않는 게 예의"],
+  ["연애 중 음주는", "둘이서만 가능", "각자 자유롭게 OK"],
+  ["연인끼리 비밀번호는", "공유한다", "각자만의 영역"],
+  ["권태기가 오면", "솔직히 털어놓는다", "혼자 삭이며 견딘다"],
+
+  // ── 추가: 가치관 / 라이프스타일 ──
+  ["휴식은", "집에서 혼자 푹 쉬기", "밖에 나가서 활동"],
+  ["여행은", "패키지로 편하게", "자유여행으로 부딪히며"],
+  ["친구는", "적게 깊게", "많이 넓게"],
+  ["인생은", "모험이 정답", "안정이 정답"],
+  ["사람은", "첫인상이 90%", "겪어봐야 안다"],
+  ["도전은", "무모해도 일단 해본다", "충분히 준비하고 한다"],
+  ["선물은", "실용성", "감동"],
+  ["추억은", "사진으로 남겨야", "마음에만 담아야"],
+  ["MBTI는", "믿는 편", "재미로만 본다"],
+  ["가성비 vs 가심비, 나는", "가성비", "가심비"],
+
+  // ── 추가: 음식 ──
+  ["라면 면발은", "꼬들꼬들", "푹 익혀서"],
+  ["치킨은", "후라이드", "양념"],
+  ["짜장면 vs 짬뽕에서", "짜장면", "짬뽕"],
+  ["떡볶이는", "매콤한 빨간", "로제·크림"],
+  ["회 한 점이라면", "광어", "연어"],
+  ["라면 사이드는", "김치", "단무지"],
+  ["커피는", "아이스 사계절", "추울 땐 따뜻하게"],
+
+  // ── 추가: 일상 습관 ──
+  ["운동은", "새벽", "저녁"],
+  ["영화는", "영화관에서", "집에서 OTT로"],
+  ["핸드폰 사진 정리는", "매일 한다", "안 한다"],
+  ["양치는", "식후 바로", "30분 뒤에"],
+  ["샤워는", "아침에", "자기 전에"],
+  ["주말은", "약속 가득", "약속 없이 푹"],
+
+  // ── 추가: 직장 / 사회 ──
+  ["직장 선택은", "연봉이 우선", "워라밸이 우선"],
+  ["일은", "빨리 끝내고 쉰다", "완벽하게 다듬는다"],
+  ["회식은", "일찍 끝내기", "늦게까지 즐기기"],
+  ["출근길은", "음악 들으며", "팟캐스트·뉴스"],
+
+  // ── 추가: 돈 / 소비 ──
+  ["월급은", "받는 즉시 저축", "쓰고 남는 거 저축"],
+  ["쇼핑은", "오프라인에서 직접", "온라인 최저가"],
+  ["복권 1등 당첨되면", "조용히 혼자 안다", "가족·친구에 나눈다"],
+
+  // ── 추가: 연애 / 결혼 (보강) ──
+  ["첫 만남은", "소개팅", "자연스러운 만남"],
+  ["헤어질 때는", "직접 만나서", "카톡·전화"],
+  ["이상형은", "외모가 우선", "분위기가 우선"],
+  ["사랑 표현은", "말로", "행동으로"],
+  ["데이트는", "멀어도 새로운 곳", "가까운 단골"],
+  ["결혼식 비용은", "양가 반반", "사정 따라 유연하게"],
+  ["신혼생활은", "부모님 가까이", "둘만의 공간"],
+
+  // ── 추가: 패션 / 외모 / 취미 ──
+  ["패션은", "유행 따라", "내 취향 고집"],
+  ["SNS는", "활발하게", "안 하거나 비공개"],
+  ["반려동물은", "강아지", "고양이"],
+  ["운전은", "안전제일 거북이", "흐름 맞춰 시원하게"],
+  ["노래방 18번은", "발라드", "댄스곡"],
+  ["피곤할 때는", "단 거 먹기", "그냥 자기"],
+
+  // ── 추가: 연인 관계 (취향 반영) ──
+  ["사귀고 싶은 사람의 연락 빈도가 줄면", "솔직히 물어본다", "나도 같이 줄인다"],
+  ["사귄 지 1년이 지나면", "사랑이 더 깊어진다", "설렘은 점점 사라진다"],
+  ["연인의 친구가 나를 싫어한다면", "연인에게 말한다", "혼자 삭인다"],
+  ["연인이 게임·취미에 빠져 있을 때", "같이 즐긴다", "혼자 시간을 보낸다"],
+  ["다툰 후", "먼저 사과한다", "잘잘못을 가린다"],
+  ["연인이 살이 갑자기 찐다면", "솔직히 말해준다", "모른 척한다"],
+  ["데이트 후 헤어질 때", "집까지 데려다준다", "큰 길에서 헤어진다"],
+  ["연애 중 다른 사람에게 호감이 생기면", "솔직히 털어놓는다", "혼자 정리한다"],
+  ["연인의 식습관이 다르면", "맞춰준다", "따로 먹는다"],
+  ["사귀고 100일", "무조건 기념한다", "굳이 안 챙긴다"],
+  ["결혼 전", "서로의 연봉·재정 100% 공개", "결혼 후에 차차"],
+  ["연인과 싸우면", "며칠씩 연락 끊기", "그래도 매일 연락"],
+  ["데이트 식당은", "한 사람 취향 우선", "매번 바꿔가며"],
+  ["연인이 늦으면", "카페에서 책 읽으며 기다린다", "들어가서 짜증낸다"],
+  ["권태기 극복은", "여행 한 번", "시간이 약"],
+  ["연인 부모님 호칭", "“어머님/아버님” 빨리", "한참 뒤에 자연스럽게"],
+  ["결혼은", "연애의 종착역", "새로운 시작"],
+
+  // ── 추가: 유머·아이스브레이킹 ──
+  ["무인도에 가져갈 것은", "생필품", "반려동물"],
+  ["친구가 노래방에서 음치인데 본인은 잘한다고 믿는다", "진실을 알려준다", "끝까지 응원한다"],
+  ["카페 옆자리 통화 소리가 너무 클 때", "직접 부탁한다", "째려보고 자리 옮긴다"],
+  ["처음 본 강아지가 다가올 때", "일단 만진다", "주인에게 먼저 묻는다"],
+  ["회사 단톡방에 실수로 사적인 메시지를 보냈다", "잠수 탄다", "바로 정면 사과한다"],
+  ["길에서 옛 친구를 우연히 발견했을 때", "반갑게 인사한다", "모른 척 지나간다"],
+  ["인사를 받았는데 사실 나 말고 뒷사람한테 한 거였다", "못 본 척한다", "한번 더 환하게 웃는다"],
+  ["친구가 SNS에 나 못생기게 나온 사진을 올렸다", "바로 내려달라 한다", "그냥 둔다"],
+];
+
+/* ============================================================
+   왕 능력 풀
+   seconds: 0 이면 타이머 없음
+============================================================ */
+const ABILITIES = [
+  // 다같이
+  { label: "다같이 · 1분", text: "왕이 말할 때마다 “성은이 망극하옵니다!” 외치기", seconds: 60 },
+  { label: "다같이 · 1분", text: "왕의 말이 끝날 때마다 박수치기", seconds: 60 },
+  { label: "다같이 · 1분", text: "왕이 말할 때마다 “옳소!” 외치기", seconds: 60 },
+  { label: "다같이 · 1분", text: "왕이 웃으면 모두 따라 웃기", seconds: 60 },
+  { label: "다같이 · 1분", text: "왕이 가볍게 손을 들면 모두 조용", seconds: 60 },
+  { label: "다같이 · 1분", text: "즐겁게 말하시오", seconds: 60 },
+  { label: "다같이 · 30초", text: "모든 발언 끝에 “어떠하옵니까?” 붙이기", seconds: 30 },
+  { label: "다같이 · 30초", text: "왕의 말끝마다 “지당하신 말씀입니다” 외치기", seconds: 30 },
+  { label: "다같이 · 1분", text: "발언 시작 전 가벼운 절 한 번씩 하기", seconds: 60 },
+
+  // 지목 (시간 있음)
+  { label: "지목 · 20초", text: "아무나 1명 말 금지", seconds: 20 },
+  { label: "지목 · 20초", text: "아무나 1명 무조건 발언", seconds: 20 },
+  { label: "지목 · 1분", text: "왕이 이름 부르면 일어나서 말하기", seconds: 60 },
+  { label: "지목 · 1분", text: "말끝에 ~용 붙이기", seconds: 60 },
+  { label: "지목 · 1분", text: "말할 때마다 양손 하트 만들기", seconds: 60 },
+  { label: "지목 · 20초", text: "의자에서 5cm 뜨고 있기", seconds: 20 },
+  { label: "지목 · 1분", text: "한 명에게 속삭임으로만 말하게 하기", seconds: 60 },
+  { label: "지목 · 1분", text: "한 명은 영어 단어 1개 이상 섞어 말하기", seconds: 60 },
+
+  // 지목 (시간 없음)
+  { label: "지목", text: "한 명을 다른 팀으로 보내기", seconds: 0 },
+  { label: "지목", text: "가장 조용한 사람 강제 발언 (제한 없음)", seconds: 0 }
+];
+
+/* ============================================================
+   상태
+============================================================ */
+const state = {
+  participants: [],
+  kingIndex: -1,
+  round: 0,
+  usedOxIdx: new Set(),
+  usedChoiceIdx: new Set(),
+  currentTopic: null,
+  leftTeam: [],
+  rightTeam: [],
+  selectedNextKing: null,
+  abilities: [],
+  timers: {},
+  phase: 'setup'
+};
+
+/* ============================================================
+   유틸
+============================================================ */
+const $ = (id) => document.getElementById(id);
+function shuffle(arr){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function randInt(n){ return Math.floor(Math.random() * n); }
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function formatTime(sec){
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+function show(el){
+  el.classList.remove('hidden');
+  // 인라인 style.display 가 'none'으로 잡혀 있다면 풀어준다.
+  // modal 류는 CSS의 .modal { display: flex; }에 의존하므로 인라인은 비워둠.
+  if (el.style.display === 'none') el.style.display = '';
+}
+function hide(el){
+  el.classList.add('hidden');
+  el.style.display = 'none';
+}
+
+/* ============================================================
+   셋업
+============================================================ */
+const MIN_PLAYERS = 3;
+const INITIAL_SLOTS = 4;
+
+function renderNameInputs(values){
+  const list = $('nameList');
+  list.innerHTML = '';
+  values.forEach((v, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'name-input-wrap';
+    const showRemove = values.length > MIN_PLAYERS;
+    wrap.innerHTML = `
+      <input type="text" class="name-input" data-idx="${i}" value="${escapeHtml(v)}"
+        placeholder="참여자 ${i+1}" maxlength="14" autocomplete="off" />
+      ${showRemove ? `<button class="name-remove" data-remove="${i}" title="삭제" aria-label="삭제">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>` : ''}
+    `;
+    list.appendChild(wrap);
+  });
+  list.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', updateNameCount);
+    inp.addEventListener('keydown', onNameKeydown);
+  });
+  list.querySelectorAll('[data-remove]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = +btn.getAttribute('data-remove');
+      const current = getCurrentNames();
+      current.splice(idx, 1);
+      renderNameInputs(current);
+    });
+  });
+  updateNameCount();
+}
+function getCurrentNames(){
+  return Array.from(document.querySelectorAll('#nameList input')).map(i => i.value);
+}
+function onNameKeydown(e){
+  if (e.key === 'Enter'){
+    e.preventDefault();
+    const idx = +e.target.getAttribute('data-idx');
+    const inputs = document.querySelectorAll('#nameList input');
+    if (idx < inputs.length - 1){
+      inputs[idx + 1].focus();
+    } else {
+      const current = getCurrentNames();
+      if (current[current.length - 1].trim() !== ''){
+        current.push('');
+        renderNameInputs(current);
+        setTimeout(() => {
+          const inps = document.querySelectorAll('#nameList input');
+          inps[inps.length - 1].focus();
+        }, 0);
+      }
+    }
+  }
+}
+function updateNameCount(){
+  const names = getCurrentNames().map(n => n.trim()).filter(n => n);
+  const meta = $('nameCount');
+  const dup = new Set(names).size !== names.length;
+  meta.textContent = dup ? `${names.length}명 · 이름이 중복됩니다` : `${names.length}명`;
+  meta.classList.toggle('error', dup);
+  $('startBtn').disabled = names.length < MIN_PLAYERS || dup;
+}
+
+$('addNameBtn').addEventListener('click', () => {
+  const current = getCurrentNames();
+  current.push('');
+  renderNameInputs(current);
+  setTimeout(() => {
+    const inputs = document.querySelectorAll('#nameList input');
+    inputs[inputs.length - 1].focus();
+  }, 0);
+});
+$('startBtn').addEventListener('click', () => {
+  const names = getCurrentNames().map(n => n.trim()).filter(n => n);
+  if (names.length < MIN_PLAYERS) return;
+  startGame(names);
+});
+
+/* ============================================================
+   게임 시작 / 라운드
+============================================================ */
+function startGame(names){
+  state.participants = names.slice();
+  state.kingIndex = randInt(names.length);
+  state.round = 0;
+  state.usedOxIdx = new Set();
+  state.usedChoiceIdx = new Set();
+
+  hide($('setupScreen'));
+  show($('roundScreen'));
+  $('roundScreen').classList.add('fade-in');
+  show($('roundBadge'));
+  show($('resetBtn'));
+
+  showTransition(state.participants[state.kingIndex], beginRound);
+}
+
+function beginRound(){
+  state.round++;
+  $('roundNum').textContent = state.round;
+  state.currentTopic = null;
+  state.leftTeam = [];
+  state.rightTeam = [];
+  clearAllTimers();
+  state.abilities = pickAbilities();
+  state.phase = 'round-idle';
+
+  $('kingName').textContent = state.participants[state.kingIndex];
+  renderAbilities();
+  renderTopic();
+  renderTeams();
+
+  show($('drawTopicBtn'));
+  hide($('assignBtn'));
+  hide($('finishBtn'));
+
+  $('roundScreen').classList.remove('fade-in');
+  void $('roundScreen').offsetWidth;
+  $('roundScreen').classList.add('fade-in');
+}
+
+function pickAbilities(){
+  return shuffle(ABILITIES).slice(0, 2);
+}
+
+/* ============================================================
+   능력 카드 + 타이머
+============================================================ */
+function clearAllTimers(){
+  Object.values(state.timers).forEach(t => {
+    if (t && t.intervalId) clearInterval(t.intervalId);
+  });
+  state.timers = {};
+}
+
+function renderAbilities(){
+  const cont = $('abilities');
+  cont.innerHTML = '';
+  state.abilities.forEach((ab, i) => {
+    const hasTimer = ab.seconds > 0;
+    const card = document.createElement('div');
+    card.className = 'ability-card';
+    card.innerHTML = `
+      <div class="ability-head">
+        <span class="ability-tag">${escapeHtml(ab.label)}</span>
+        ${hasTimer ? `<button class="timer-btn" data-timer="${i}" data-seconds="${ab.seconds}">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <span class="timer-text">${formatTime(ab.seconds)}</span>
+        </button>` : ''}
+      </div>
+      <div class="ability-text keep-all">${escapeHtml(ab.text)}</div>
+    `;
+    cont.appendChild(card);
+  });
+  cont.querySelectorAll('[data-timer]').forEach(btn => {
+    btn.addEventListener('click', () => onTimerToggle(btn));
+  });
+}
+
+function onTimerToggle(btn){
+  const idx = +btn.getAttribute('data-timer');
+  const seconds = +btn.getAttribute('data-seconds');
+  let t = state.timers[idx];
+
+  // 시작 또는 완료 후 재시작
+  if (!t || t.status === 'idle' || t.status === 'done'){
+    if (t && t.intervalId) clearInterval(t.intervalId);
+    state.timers[idx] = { remaining: seconds, status: 'running', intervalId: null };
+    t = state.timers[idx];
+    btn.classList.remove('done');
+    btn.classList.add('running');
+    setTimerBtnContent(btn, 'pause', formatTime(t.remaining));
+
+    t.intervalId = setInterval(() => {
+      t.remaining--;
+      if (t.remaining <= 0){
+        clearInterval(t.intervalId);
+        t.intervalId = null;
+        t.status = 'done';
+        btn.classList.remove('running');
+        btn.classList.add('done');
+        setTimerBtnContent(btn, 'reset', '완료');
+        if (navigator.vibrate){ try { navigator.vibrate(200); } catch(e){} }
+      } else {
+        const txt = btn.querySelector('.timer-text');
+        if (txt) txt.textContent = formatTime(t.remaining);
+      }
+    }, 1000);
+    return;
+  }
+
+  // 진행 중 → 중지(리셋)
+  if (t.status === 'running'){
+    if (t.intervalId) clearInterval(t.intervalId);
+    t.intervalId = null;
+    t.status = 'idle';
+    t.remaining = seconds;
+    btn.classList.remove('running');
+    btn.classList.remove('done');
+    setTimerBtnContent(btn, 'play', formatTime(seconds));
+  }
+}
+
+function setTimerBtnContent(btn, iconType, text){
+  let icon = '';
+  if (iconType === 'play'){
+    icon = `<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
+  } else if (iconType === 'pause'){
+    icon = `<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>`;
+  } else if (iconType === 'reset'){
+    icon = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>`;
+  }
+  btn.innerHTML = `${icon}<span class="timer-text">${escapeHtml(text)}</span>`;
+}
+
+/* ============================================================
+   주제 뽑기 / 렌더
+============================================================ */
+$('drawTopicBtn').addEventListener('click', drawTopic);
+
+function drawTopic(){
+  const topic = pickUnusedTopic();
+  if (!topic){
+    alert('모든 주제를 다 사용했습니다! 게임을 새로 시작해주세요.');
+    return;
+  }
+  state.currentTopic = topic;
+  state.phase = 'round-topic';
+  renderTopic();
+  hide($('drawTopicBtn'));
+  show($('assignBtn'));
+}
+
+function pickUnusedTopic(){
+  const oxLeft = OX_TOPICS.length - state.usedOxIdx.size;
+  const chLeft = CHOICE_TOPICS.length - state.usedChoiceIdx.size;
+  if (oxLeft <= 0 && chLeft <= 0) return null;
+
+  const useOx = (Math.random() * (oxLeft + chLeft)) < oxLeft;
+  if (useOx && oxLeft > 0){
+    const idx = pickUnusedIndex(OX_TOPICS.length, state.usedOxIdx);
+    state.usedOxIdx.add(idx);
+    return { type: 'ox', question: OX_TOPICS[idx] };
+  }
+  if (chLeft > 0){
+    const idx = pickUnusedIndex(CHOICE_TOPICS.length, state.usedChoiceIdx);
+    state.usedChoiceIdx.add(idx);
+    const t = CHOICE_TOPICS[idx];
+    return { type: 'choice', question: t[0], leftChoice: t[1], rightChoice: t[2] };
+  }
+  if (oxLeft > 0){
+    const idx = pickUnusedIndex(OX_TOPICS.length, state.usedOxIdx);
+    state.usedOxIdx.add(idx);
+    return { type: 'ox', question: OX_TOPICS[idx] };
+  }
+  return null;
+}
+function pickUnusedIndex(total, usedSet){
+  const available = [];
+  for (let i = 0; i < total; i++) if (!usedSet.has(i)) available.push(i);
+  return available[randInt(available.length)];
+}
+
+function renderTopic(){
+  const empty = $('topicEmpty');
+  const content = $('topicContent');
+  const badge = $('topicTypeBadge');
+  const qEl = $('topicQuestion');
+  const cEl = $('topicChoices');
+
+  if (!state.currentTopic){
+    empty.style.display = '';
+    content.style.display = 'none';
+    badge.style.display = 'none';
+    badge.textContent = '';
+    updateSideLabels();
+    return;
+  }
+
+  empty.style.display = 'none';
+  content.style.display = '';
+  badge.style.display = '';
+
+  content.classList.remove('slide-up');
+  void content.offsetWidth;
+  content.classList.add('slide-up');
+
+  badge.classList.remove('indigo','amber','gold');
+  if (state.currentTopic.type === 'ox'){
+    badge.textContent = 'O / X';
+    badge.classList.add('indigo');
+    qEl.textContent = state.currentTopic.question;
+    cEl.style.display = '';
+    cEl.innerHTML = `
+      <span class="choice-left">O · 찬성</span>
+      <span class="vs">VS</span>
+      <span class="choice-right">X · 반대</span>
+    `;
+  } else {
+    badge.textContent = 'A vs B';
+    badge.classList.add('amber');
+    qEl.textContent = state.currentTopic.question;
+    cEl.style.display = '';
+    cEl.innerHTML = `
+      <span class="choice-left">${escapeHtml(state.currentTopic.leftChoice)}</span>
+      <span class="vs">VS</span>
+      <span class="choice-right">${escapeHtml(state.currentTopic.rightChoice)}</span>
+    `;
+  }
+  updateSideLabels();
+}
+
+function updateSideLabels(){
+  const lLabel = $('leftLabel');
+  const rLabel = $('rightLabel');
+  if (!state.currentTopic){
+    lLabel.textContent = '좌측 진영';
+    rLabel.textContent = '우측 진영';
+  } else if (state.currentTopic.type === 'choice'){
+    lLabel.textContent = state.currentTopic.leftChoice;
+    rLabel.textContent = state.currentTopic.rightChoice;
+  } else {
+    lLabel.textContent = 'O · 찬성';
+    rLabel.textContent = 'X · 반대';
+  }
+}
+
+/* ============================================================
+   팀 배정
+============================================================ */
+$('assignBtn').addEventListener('click', assignTeams);
+
+function assignTeams(){
+  const king = state.participants[state.kingIndex];
+  const others = state.participants.filter(p => p !== king);
+  const shuffled = shuffle(others);
+
+  const half = Math.ceil(shuffled.length / 2);
+  let left, right;
+  if (Math.random() < 0.5){
+    left = shuffled.slice(0, half);
+    right = shuffled.slice(half);
+  } else {
+    right = shuffled.slice(0, half);
+    left = shuffled.slice(half);
+  }
+  state.leftTeam = left;
+  state.rightTeam = right;
+  state.phase = 'round-assigned';
+  renderTeams(true);
+
+  hide($('assignBtn'));
+  show($('finishBtn'));
+}
+
+function renderTeams(animate = false){
+  const left = $('leftTeam');
+  const right = $('rightTeam');
+  left.innerHTML = '';
+  right.innerHTML = '';
+  state.leftTeam.forEach((name, i) => {
+    const el = document.createElement('div');
+    el.className = 'name-pill left';
+    if (animate){ el.classList.add('pop'); el.style.animationDelay = `${i * 60}ms`; }
+    el.textContent = name;
+    left.appendChild(el);
+  });
+  state.rightTeam.forEach((name, i) => {
+    const el = document.createElement('div');
+    el.className = 'name-pill right';
+    if (animate){ el.classList.add('pop'); el.style.animationDelay = `${i * 60}ms`; }
+    el.textContent = name;
+    right.appendChild(el);
+  });
+}
+
+/* ============================================================
+   다음 왕 선택
+============================================================ */
+$('finishBtn').addEventListener('click', openKingPicker);
+
+function openKingPicker(){
+  state.selectedNextKing = null;
+  const list = $('pickerList');
+  list.innerHTML = '';
+  state.participants.forEach(name => {
+    const item = document.createElement('div');
+    item.className = 'picker-item';
+    item.dataset.name = name;
+    const isCurrent = name === state.participants[state.kingIndex];
+    item.innerHTML = `
+      <span>${escapeHtml(name)}</span>
+      ${isCurrent ? '<span class="chip gold">현재 왕</span>' : ''}
+    `;
+    item.addEventListener('click', () => {
+      list.querySelectorAll('.picker-item').forEach(p => p.classList.remove('selected'));
+      item.classList.add('selected');
+      state.selectedNextKing = name;
+      $('pickerConfirm').disabled = false;
+    });
+    list.appendChild(item);
+  });
+  $('pickerConfirm').disabled = true;
+  show($('kingPicker'));
+}
+function closeKingPicker(){ hide($('kingPicker')); }
+$('pickerCancel').addEventListener('click', closeKingPicker);
+$('pickerBackdrop').addEventListener('click', closeKingPicker);
+$('pickerConfirm').addEventListener('click', () => {
+  if (!state.selectedNextKing) return;
+  const nextName = state.selectedNextKing;
+  closeKingPicker();
+  state.kingIndex = state.participants.indexOf(nextName);
+  state.leftTeam = [];
+  state.rightTeam = [];
+  state.currentTopic = null;
+  clearAllTimers();
+  renderTeams();
+  renderTopic();
+  showTransition(nextName, beginRound);
+});
+
+/* ============================================================
+   전환 슬라이드
+============================================================ */
+function showTransition(name, onDone){
+  const overlay = $('transitionOverlay');
+  $('transitionName').textContent = name;
+  show(overlay);
+  const card = overlay.querySelector('.transition-card');
+  card.classList.remove('pop');
+  void card.offsetWidth;
+  card.classList.add('pop');
+  setTimeout(() => {
+    hide(overlay);
+    if (typeof onDone === 'function') onDone();
+  }, 1500);
+}
+
+/* ============================================================
+   전체화면 (실제 fullscreen + pseudo fallback)
+============================================================ */
+const fsBtn = $('fsBtn');
+const fsIconOn = $('fsIconOn');
+const fsIconOff = $('fsIconOff');
+const fsLabel = $('fsLabel');
+
+function isRealFs(){
+  return !!(document.fullscreenElement || document.webkitFullscreenElement);
+}
+function isPseudoFs(){
+  return document.body.classList.contains('pseudo-fs');
+}
+function isFs(){ return isRealFs() || isPseudoFs(); }
+
+function updateFsBtn(){
+  if (isFs()){
+    fsIconOn.style.display = 'none';
+    fsIconOff.style.display = '';
+    fsLabel.textContent = '나가기';
+  } else {
+    fsIconOn.style.display = '';
+    fsIconOff.style.display = 'none';
+    fsLabel.textContent = '전체화면';
+  }
+}
+
+function enterFs(){
+  // pseudo 즉시 적용 (실패 시에도 시각적 효과 보장)
+  pseudoFs(true);
+  // 실제 fullscreen 시도 — 실패해도 pseudo 유지
+  const el = document.documentElement;
+  const req = el.requestFullscreen || el.webkitRequestFullscreen
+            || el.mozRequestFullScreen || el.msRequestFullscreen;
+  if (req){
+    try {
+      const p = req.call(el);
+      if (p && p.catch) p.catch(() => {/* pseudo로 fallback 유지 */});
+    } catch(e){ /* pseudo 유지 */ }
+  }
+}
+function exitFs(){
+  // real 먼저 해제 시도
+  if (isRealFs()){
+    const exit = document.exitFullscreen || document.webkitExitFullscreen
+               || document.mozCancelFullScreen || document.msExitFullscreen;
+    if (exit){ try { exit.call(document); } catch(e){} }
+  }
+  pseudoFs(false);
+}
+function pseudoFs(on){
+  document.body.classList.toggle('pseudo-fs', on);
+  updateFsBtn();
+}
+fsBtn.addEventListener('click', () => { isFs() ? exitFs() : enterFs(); });
+document.addEventListener('fullscreenchange', updateFsBtn);
+document.addEventListener('webkitfullscreenchange', updateFsBtn);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && isPseudoFs() && !isRealFs()){
+    pseudoFs(false);
+  }
+});
+
+/* ============================================================
+   리셋
+============================================================ */
+$('resetBtn').addEventListener('click', () => {
+  if (!confirm('처음 화면으로 돌아가시겠습니까? 현재 게임이 초기화됩니다.')) return;
+  resetToSetup();
+});
+function resetToSetup(){
+  clearAllTimers();
+  state.participants = [];
+  state.kingIndex = -1;
+  state.round = 0;
+  state.usedOxIdx = new Set();
+  state.usedChoiceIdx = new Set();
+  state.currentTopic = null;
+  state.leftTeam = [];
+  state.rightTeam = [];
+  state.abilities = [];
+  state.phase = 'setup';
+
+  hide($('roundScreen'));
+  show($('setupScreen'));
+  hide($('roundBadge'));
+  hide($('resetBtn'));
+  renderNameInputs(new Array(INITIAL_SLOTS).fill(''));
+}
+
+/* ============================================================
+   초기화
+============================================================ */
+function init(){
+  renderNameInputs(new Array(INITIAL_SLOTS).fill(''));
+  updateFsBtn();
+}
+init();
+</script>
+</body>
+</html>
