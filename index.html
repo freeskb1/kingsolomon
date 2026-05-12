@@ -35,6 +35,8 @@
   }
   html, body {
     height: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
     background: var(--bg);
     color: var(--ink);
     font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -45,7 +47,15 @@
   .keep-all { word-break: keep-all; }
 
   /* 레이아웃 */
-  #app { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
+  #app {
+    display: flex; flex-direction: column;
+    height: 100vh;       /* 폴백 */
+    height: 100dvh;      /* iOS 사파리 주소창 대응 */
+    width: 100vw;
+    max-height: 100vh;
+    max-height: 100dvh;
+    overflow: hidden;
+  }
   header.app-header {
     display: flex; align-items: center; justify-content: space-between;
     padding: 14px 32px;
@@ -113,13 +123,13 @@
   }
   .name-remove:hover { color: var(--red); background: #fef2f2; }
 
-  /* 라운드 화면: 세로 3단 (왕 20% / 주제 65% / 진영 15%) + 액션 row(auto) */
-  #roundScreen { display: flex; flex-direction: column; padding: 20px 32px; gap: 14px; }
+  /* 라운드 화면: 세로 3단 (왕 20% / 주제 55% / 진영 25%) + 액션 row(auto) */
+  #roundScreen { display: flex; flex-direction: column; padding: 16px 28px; gap: 12px; }
   .king-row { flex: 20 1 0; min-height: 0; }
-  .topic-row { flex: 65 1 0; min-height: 0; }
+  .topic-row { flex: 55 1 0; min-height: 0; }
   .bottom-grid {
     display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
-    flex: 15 1 0; min-height: 0;
+    flex: 25 1 0; min-height: 0;
   }
   .action-row {
     display: flex; align-items: center; justify-content: center; gap: 12px;
@@ -274,12 +284,12 @@
   .topic-choices .choice-left { color: var(--left); }
   .topic-choices .choice-right { color: var(--right); }
 
-  /* 좌우 진영 - 컴팩트 */
+  /* 좌우 진영 */
   .side-column {
     background: #fff;
     border: 1px solid var(--line);
     border-radius: 14px;
-    padding: 10px 14px;
+    padding: 14px 16px;
     height: 100%;
     display: flex; flex-direction: column;
     overflow: hidden;
@@ -288,11 +298,11 @@
   .side-right { border-top: 3px solid var(--right); }
   .side-header {
     display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 8px; flex-shrink: 0;
+    margin-bottom: 10px; flex-shrink: 0;
   }
   .side-title {
     font-weight: 800;
-    font-size: 13px;
+    font-size: 14px;
     letter-spacing: 0.05em;
   }
   .side-left .side-title { color: var(--left); }
@@ -310,11 +320,11 @@
   .name-pill {
     background: #fff;
     border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 5px 10px;
+    border-radius: 10px;
+    padding: 8px 12px;
     font-weight: 600;
     color: var(--ink);
-    font-size: 14px;
+    font-size: 16px;
     white-space: nowrap;
   }
   .name-pill.left { background: var(--left-soft); border-color: var(--left-border); color: var(--left); }
