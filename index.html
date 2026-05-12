@@ -113,11 +113,18 @@
   }
   .name-remove:hover { color: var(--red); background: #fef2f2; }
 
-  /* 라운드 화면 */
-  #roundScreen { display: flex; flex-direction: column; padding: 24px 32px; gap: 20px; }
-  .top-grid { display: grid; grid-template-columns: 4fr 8fr; gap: 20px; flex-shrink: 0; }
-  .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1; min-height: 0; }
-  .action-row { display: flex; align-items: center; justify-content: center; gap: 12px; flex-shrink: 0; }
+  /* 라운드 화면: 세로 3단 (왕 20% / 주제 65% / 진영 15%) + 액션 row(auto) */
+  #roundScreen { display: flex; flex-direction: column; padding: 20px 32px; gap: 14px; }
+  .king-row { flex: 20 1 0; min-height: 0; }
+  .topic-row { flex: 65 1 0; min-height: 0; }
+  .bottom-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    flex: 15 1 0; min-height: 0;
+  }
+  .action-row {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    flex-shrink: 0;
+  }
 
   .slide-card {
     background: var(--card);
@@ -126,24 +133,51 @@
     border-radius: 18px;
   }
 
-  /* 왕 카드 */
+  /* 왕 카드 - 가로 배치 */
   .king-card {
     background: linear-gradient(180deg, #fffdf6 0%, #fbf3df 100%);
     border: 1px solid #ead9a8;
     border-radius: 18px;
-    padding: 20px;
+    padding: 16px 20px;
     height: 100%;
     display: flex; flex-direction: column;
+    overflow: hidden;
   }
+  .king-card.horizontal {
+    flex-direction: row;
+    gap: 20px;
+    align-items: stretch;
+  }
+  .king-info {
+    flex: 0 0 260px;
+    display: flex; flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+  }
+  .king-info .chip { align-self: flex-start; margin-bottom: 6px; }
   .king-name {
-    font-size: 34px; font-weight: 800; letter-spacing: -0.02em;
-    color: #1f1500; line-height: 1.1; margin-bottom: 16px;
+    font-size: 28px; font-weight: 800; letter-spacing: -0.02em;
+    color: #1f1500; line-height: 1.1; margin-bottom: 6px;
   }
   .ability-hint {
     font-size: 11px; color: rgba(120, 53, 15, 0.7);
-    font-weight: 600; margin-bottom: 8px; line-height: 1.5;
+    font-weight: 600; line-height: 1.5;
+    margin: 0;
   }
-  .ability-list { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .ability-list {
+    display: flex; flex-direction: column; gap: 8px; flex: 1;
+    min-width: 0;
+  }
+  .ability-list.horizontal {
+    flex-direction: row;
+    gap: 10px;
+  }
+  .ability-list.horizontal .ability-card {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex; flex-direction: column;
+    justify-content: center;
+  }
 
   .ability-card {
     background: #fffaf0;
@@ -195,6 +229,9 @@
     50% { transform: scale(1.06); }
   }
 
+  .topic-row > .topic-slide,
+  .topic-row > .slide-card { height: 100%; }
+
   /* 질문 슬라이드 */
   .topic-slide {
     padding: 32px;
@@ -237,12 +274,12 @@
   .topic-choices .choice-left { color: var(--left); }
   .topic-choices .choice-right { color: var(--right); }
 
-  /* 좌우 진영 */
+  /* 좌우 진영 - 컴팩트 */
   .side-column {
     background: #fff;
     border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 18px;
+    border-radius: 14px;
+    padding: 10px 14px;
     height: 100%;
     display: flex; flex-direction: column;
     overflow: hidden;
@@ -251,21 +288,21 @@
   .side-right { border-top: 3px solid var(--right); }
   .side-header {
     display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 14px; flex-shrink: 0;
+    margin-bottom: 8px; flex-shrink: 0;
   }
   .side-title {
     font-weight: 800;
-    font-size: 14px;
+    font-size: 13px;
     letter-spacing: 0.05em;
   }
   .side-left .side-title { color: var(--left); }
   .side-right .side-title { color: var(--right); }
   .side-tag {
-    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
     color: #94a3b8;
   }
   .team-list {
-    display: flex; flex-wrap: wrap; gap: 8px;
+    display: flex; flex-wrap: wrap; gap: 6px;
     align-content: flex-start;
     overflow: auto;
     flex: 1;
@@ -273,11 +310,11 @@
   .name-pill {
     background: #fff;
     border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 10px 14px;
+    border-radius: 8px;
+    padding: 5px 10px;
     font-weight: 600;
     color: var(--ink);
-    font-size: 17px;
+    font-size: 14px;
     white-space: nowrap;
   }
   .name-pill.left { background: var(--left-soft); border-color: var(--left-border); color: var(--left); }
@@ -445,8 +482,10 @@
   }
 
   @media (max-width: 1024px) {
-    .top-grid { grid-template-columns: 1fr; }
-    .king-card { height: auto; }
+    .king-card.horizontal { flex-direction: column; gap: 12px; }
+    .king-info { flex: 0 0 auto; }
+    .ability-list.horizontal { flex-direction: column; }
+    .king-row { flex: 0 0 auto; }
   }
 </style>
 </head>
@@ -510,16 +549,20 @@
     </section>
 
     <section id="roundScreen" class="screen hidden" style="display:none">
-      <div class="top-grid">
-        <div class="king-card">
-          <div style="margin-bottom: 8px;">
+      <!-- 1단: 왕 카드 (20%) - 가로 배치 -->
+      <div class="king-row">
+        <div class="king-card horizontal">
+          <div class="king-info">
             <span class="chip gold">👑 이번 라운드의 왕</span>
+            <div id="kingName" class="king-name">—</div>
+            <div class="ability-hint keep-all">※ 각 능력은 토론 중 왕이 원할 때 1회씩 사용합니다. 시간이 있는 능력은 ▶ 버튼으로 타이머가 작동합니다.</div>
           </div>
-          <div id="kingName" class="king-name">—</div>
-          <div class="ability-hint keep-all">※ 각 능력은 토론 중 왕이 원할 때 1회씩 사용합니다. 시간이 있는 능력은 ▶ 버튼으로 타이머가 작동합니다.</div>
-          <div id="abilities" class="ability-list"></div>
+          <div id="abilities" class="ability-list horizontal"></div>
         </div>
+      </div>
 
+      <!-- 2단: 주제 슬라이드 (65%) -->
+      <div class="topic-row">
         <div class="slide-card topic-slide">
           <div class="topic-badge-wrap">
             <span id="topicTypeBadge" class="chip" style="display:none"></span>
@@ -535,6 +578,7 @@
         </div>
       </div>
 
+      <!-- 액션 row -->
       <div class="action-row">
         <button id="drawTopicBtn" class="btn btn-primary">🎲 주제 뽑기</button>
         <button id="rerollTopicBtn" class="btn btn-ghost hidden">🔄 다른 주제로</button>
@@ -543,6 +587,7 @@
         <button id="finishBtn" class="btn btn-ghost hidden">토론 종료 · 다음 왕 선택</button>
       </div>
 
+      <!-- 3단: 좌/우 진영 (15%) -->
       <div class="bottom-grid">
         <div class="side-column side-left">
           <div class="side-header">
