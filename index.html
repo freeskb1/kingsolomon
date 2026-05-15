@@ -166,12 +166,12 @@
   }
   .king-info .chip { align-self: flex-start; margin-bottom: 6px; }
   .king-name {
-    font-size: 28px; font-weight: 800; letter-spacing: -0.02em;
-    color: #1f1500; line-height: 1.1; margin-bottom: 6px;
+    font-size: 36px; font-weight: 800; letter-spacing: -0.02em;
+    color: #1f1500; line-height: 1.1; margin-bottom: 8px;
   }
   .ability-hint {
-    font-size: 11px; color: rgba(120, 53, 15, 0.7);
-    font-weight: 600; line-height: 1.5;
+    font-size: 13px; color: rgba(120, 53, 15, 0.75);
+    font-weight: 600; line-height: 1.55;
     margin: 0;
   }
   .ability-list {
@@ -193,17 +193,17 @@
     background: #fffaf0;
     border: 1px solid #ead9a8;
     border-radius: 12px;
-    padding: 12px 14px;
+    padding: 14px 16px;
   }
   .ability-head {
     display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 8px; gap: 8px;
+    margin-bottom: 10px; gap: 8px;
   }
   .ability-tag {
     display: inline-block;
-    padding: 3px 9px;
-    border-radius: 6px;
-    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 7px;
+    font-size: 14px;
     font-weight: 700;
     letter-spacing: 0.04em;
     background: var(--gold-soft);
@@ -211,21 +211,21 @@
     white-space: nowrap;
   }
   .ability-text {
-    font-size: 17px;
-    font-weight: 600;
+    font-size: 30px;
+    font-weight: 700;
     color: #422006;
-    line-height: 1.45;
+    line-height: 1.35;
   }
   .timer-btn {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 5px 12px;
-    border-radius: 8px;
-    font-size: 13px; font-weight: 700;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px;
+    border-radius: 9px;
+    font-size: 15px; font-weight: 700;
     background: #fff; color: var(--gold-dark);
     border: 1px solid #ead9a8;
     transition: all .12s;
     white-space: nowrap;
-    min-width: 82px;
+    min-width: 90px;
     justify-content: center;
   }
   .timer-btn:hover { background: var(--gold-soft); }
@@ -1398,7 +1398,7 @@ function renderAbilities(){
       <div class="ability-head">
         <span class="ability-tag">${escapeHtml(ab.label)}</span>
         ${hasTimer ? `<button class="timer-btn" data-timer="${i}" data-seconds="${ab.seconds}">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
           <span class="timer-text">${formatTime(ab.seconds)}</span>
         </button>` : ''}
       </div>
@@ -1458,11 +1458,11 @@ function onTimerToggle(btn){
 function setTimerBtnContent(btn, iconType, text){
   let icon = '';
   if (iconType === 'play'){
-    icon = `<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
+    icon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
   } else if (iconType === 'pause'){
-    icon = `<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>`;
+    icon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>`;
   } else if (iconType === 'reset'){
-    icon = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>`;
+    icon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>`;
   }
   btn.innerHTML = `${icon}<span class="timer-text">${escapeHtml(text)}</span>`;
 }
