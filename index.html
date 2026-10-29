@@ -1241,6 +1241,19 @@ document.querySelectorAll('.mode-card').forEach(el => {
 const MIN_PLAYERS = 3;
 const INITIAL_SLOTS = 4;
 
+// 처음 이름 칸: 광배월드에서 ?names=["..",".."] 로 넘어오면 미리 채움 (3칸 미만이면 빈칸 추가)
+function initialNames(){
+  let names = [];
+  try {
+    const raw = JSON.parse(new URLSearchParams(location.search).get('names') || '[]');
+    if (Array.isArray(raw)) names = raw.map(n => String(n).trim().slice(0, 14)).filter(n => n);
+  } catch(e){}
+  names = names.filter((n, i) => names.indexOf(n) === i);
+  if (!names.length) return new Array(INITIAL_SLOTS).fill('');
+  while (names.length < MIN_PLAYERS) names.push('');
+  return names;
+}
+
 function renderNameInputs(values){
   const list = $('nameList');
   list.innerHTML = '';
@@ -1844,7 +1857,7 @@ function resetToSetup(){
   hide($('roundBadge'));
   hide($('modeChip'));
   hide($('resetBtn'));
-  renderNameInputs(new Array(INITIAL_SLOTS).fill(''));
+  renderNameInputs(initialNames());
   setMode('basic');
 }
 
@@ -1852,11 +1865,12 @@ function resetToSetup(){
    초기화
 ============================================================ */
 function init(){
-  renderNameInputs(new Array(INITIAL_SLOTS).fill(''));
+  renderNameInputs(initialNames());
   updateFsBtn();
   setMode('basic');  // 기본 모드 표시
 }
 init();
 </script>
+<script src="https://kwangbban.vercel.app/hub.js" defer></script>
 </body>
 </html>
