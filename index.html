@@ -33,6 +33,7 @@
     --right-border: #e6c8c8;
     --red: #dc2626;
   }
+  html, body { overscroll-behavior: none; }  /* 아래로 당겨 새로고침 막기 */
   html, body {
     height: 100%;
     min-height: 100vh;
@@ -529,9 +530,118 @@
     .ability-list.horizontal { flex-direction: column; }
     .king-row { flex: 0 0 auto; }
   }
+  /* 한 기기 모드를 폰으로 열었을 때: 3단 고정 높이 대신 위에서 아래로 스크롤 */
+  @media (max-width: 640px) {
+    header.app-header { padding: 10px 14px; }
+    .logo-subtitle, #fsLabel { display: none; }
+    .setup-wrap { padding: 28px 16px; }
+    .setup-hero h1 { font-size: 34px; }
+    .setup-card { padding: 20px 16px; }
+    .mode-grid { grid-template-columns: 1fr; }
+    .mode-card { flex-direction: row; gap: 12px; padding: 14px 16px; text-align: left; }
+    .mode-emoji { margin: 0; }
+    #roundScreen { overflow: auto; padding: 12px 14px 20px; }
+    .king-row, .topic-row, .bottom-grid { flex: 0 0 auto; }
+    .king-card { height: auto; padding: 14px 16px; }
+    .king-name { font-size: 28px; }
+    .ability-text { font-size: 18px; }
+    .topic-slide { padding: 48px 16px 24px; min-height: 220px; }
+    .topic-question { font-size: 24px; }
+    .topic-choices { font-size: 18px; }
+    .bottom-grid { gap: 10px; }
+    .side-column { min-height: 110px; padding: 12px; }
+    .action-row { flex-wrap: wrap; }
+    .action-row .btn { flex: 1 1 140px; }
+    .transition-card { padding: 40px 28px; width: 88%; }
+    .transition-name { font-size: 34px; }
+  }
+
+  /* ============ 온라인 모드 (말랑월드에서 왔을 때): 각자 폰 화면 ============ */
+  html.online, html.online body { height: auto; overflow: auto; }
+  #online { max-width: 520px; margin: 0 auto; padding: 12px 16px 40px; display: flex; flex-direction: column; gap: 12px; }
+  #online[hidden] { display: none; }
+  .o-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 2px; }
+  .o-top .logo-wrap .logo-mark { width: 32px; height: 32px; font-size: 16px; }
+  .o-card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px; box-shadow: 0 12px 40px -24px rgba(15,23,42,.25); }
+  .o-card h2 { font-size: 15px; font-weight: 700; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .o-card h2 small { font-size: 12px; font-weight: 500; color: var(--muted); }
+  .o-hero { text-align: center; padding: 18px 0 6px; }
+  .o-hero .crown { font-size: 52px; display: inline-block; animation: crownFloat 3s ease-in-out infinite; }
+  .o-hero h1 { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; margin-top: 4px; }
+  .o-hero p { color: var(--muted); font-size: 14px; line-height: 1.6; margin-top: 6px; }
+  .o-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .o-chip { padding: 7px 12px; border-radius: 999px; background: #f1f5f9; font-weight: 600; font-size: 14px; color: var(--ink-soft); }
+  .o-chip.me { box-shadow: inset 0 0 0 1.5px var(--gold); color: var(--ink); }
+  .o-chip.off { opacity: .45; }
+  .o-chip.dev { background: var(--left-soft); color: var(--left); }
+  .o-modes { display: grid; gap: 8px; }
+  .o-mode { display: flex; align-items: center; gap: 12px; text-align: left; padding: 12px 14px; border: 2px solid var(--line); border-radius: 14px; background: #fff; }
+  .o-mode.on { border-color: var(--gold); background: var(--gold-bg); }
+  .o-mode:disabled { cursor: default; }
+  .o-mode b { display: block; font-size: 15px; }
+  .o-mode span { font-size: 12px; color: var(--muted); }
+  .o-btn { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 15px; border-radius: 14px; font-weight: 700; font-size: 16px; background: var(--ink); color: #fff; }
+  .o-btn.gold { background: linear-gradient(180deg, #c79a4a 0%, #a67a30 100%); }
+  .o-btn.ghost { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+  .o-btn:disabled { opacity: .4; cursor: default; }
+  .o-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .o-note { text-align: center; font-size: 13px; color: var(--muted); }
+  .o-king { background: linear-gradient(180deg, #fffdf6 0%, #fbf3df 100%); border-color: #ead9a8; display: flex; align-items: center; gap: 12px; }
+  .o-king .crown { font-size: 34px; }
+  .o-king .who { flex: 1; min-width: 0; }
+  .o-king .who small { font-size: 12px; font-weight: 700; color: var(--gold-dark); }
+  .o-king .who b { display: block; font-size: 26px; font-weight: 800; color: #1f1500; line-height: 1.2; }
+  .o-topic { text-align: center; padding: 22px 16px; position: relative; }
+  .o-topic .chip { position: absolute; top: 12px; left: 12px; }
+  .o-topic .q { font-size: 22px; font-weight: 700; line-height: 1.4; margin-top: 14px; word-break: keep-all; }
+  .o-topic .c { font-size: 16px; font-weight: 600; margin-top: 10px; word-break: keep-all; }
+  .o-topic .c .l { color: var(--left); } .o-topic .c .r { color: var(--right); }
+  .o-topic .c .vs { color: #94a3b8; font-size: 12px; letter-spacing: .18em; margin: 0 8px; font-weight: 800; }
+  .o-topic.empty { color: #94a3b8; font-size: 14px; }
+  .o-mine { border-radius: 14px; padding: 12px 14px; font-weight: 700; text-align: center; font-size: 15px; }
+  .o-mine.left { background: var(--left-soft); color: var(--left); }
+  .o-mine.right { background: var(--right-soft); color: var(--right); }
+  .o-sides { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .o-side { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 12px; min-width: 0; }
+  .o-side.left { border-top: 3px solid var(--left); } .o-side.right { border-top: 3px solid var(--right); }
+  .o-side h3 { font-size: 13px; font-weight: 800; margin-bottom: 8px; word-break: keep-all; }
+  .o-side.left h3 { color: var(--left); } .o-side.right h3 { color: var(--right); }
+  .o-side .o-chips .o-chip { font-size: 13px; padding: 6px 10px; }
+  .o-side.left .o-chip { background: var(--left-soft); color: var(--left); }
+  .o-side.right .o-chip { background: var(--right-soft); color: var(--right); }
+  .o-ab { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); }
+  .o-ab:first-of-type { border-top: 0; padding-top: 0; }
+  .o-ab .tx { flex: 1; min-width: 0; }
+  .o-ab .tx small { display: inline-block; font-size: 11px; font-weight: 700; color: var(--gold-dark); background: var(--gold-soft); border-radius: 6px; padding: 2px 7px; }
+  .o-ab .tx b { display: block; font-size: 15px; margin-top: 4px; line-height: 1.4; word-break: keep-all; }
+  .o-ab button { flex: 0 0 auto; padding: 9px 14px; border-radius: 10px; font-weight: 700; font-size: 13px; background: var(--gold-dark); color: #fff; }
+  .o-ab button:disabled, .o-ab .used { background: #f1f5f9; color: var(--muted); }
+  .o-ab .used { flex: 0 0 auto; padding: 9px 12px; border-radius: 10px; font-size: 13px; font-weight: 700; }
+  .o-fx { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 8px 10px; background: var(--gold-bg); border-radius: 10px; margin-top: 8px; }
+  .o-fx .tx { flex: 1; min-width: 0; word-break: keep-all; }
+  .o-fx .t { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--gold-dark); }
+  .o-fx button { padding: 5px 10px; border-radius: 8px; border: 1px solid var(--line); background: #fff; font-size: 12px; font-weight: 700; }
+  /* 왕의 명령: 대상 화면 위에 떠 있는 카드 (시간 끝나면 사라짐) */
+  .o-order { position: sticky; top: 8px; z-index: 30; background: linear-gradient(180deg, #2a1f05 0%, #4a3608 100%); color: #fff; border-radius: 20px; padding: 18px 18px 16px; text-align: center; box-shadow: 0 18px 40px -12px rgba(74,54,8,.6); animation: pop .35s cubic-bezier(.2,.9,.3,1.2) both; }
+  .o-order small { font-size: 12px; font-weight: 800; letter-spacing: .2em; color: #f5d27a; }
+  .o-order b { display: block; font-size: 24px; line-height: 1.35; margin: 8px 0 10px; word-break: keep-all; }
+  .o-order .t { display: inline-block; font-variant-numeric: tabular-nums; font-size: 30px; font-weight: 800; color: #f5d27a; }
+  .o-order .t.hold { font-size: 14px; font-weight: 700; }
+  @media (prefers-reduced-motion: no-preference) { .o-order { animation: pop .35s cubic-bezier(.2,.9,.3,1.2) both, orderGlow 1.6s ease-in-out .4s infinite; } }
+  @keyframes orderGlow { 50% { box-shadow: 0 18px 50px -8px rgba(245,210,122,.75); } }
+  .o-sheet-dim { position: fixed; inset: 0; z-index: 70; background: rgba(15,23,42,.5); display: flex; align-items: flex-end; justify-content: center; }
+  .o-sheet { width: 100%; max-width: 520px; background: #fff; border-radius: 22px 22px 0 0; padding: 16px 16px calc(20px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 12px; max-height: 85vh; overflow: auto; animation: slideUp .3s cubic-bezier(.2,.7,.2,1) both; }
+  .o-sheet h3 { font-size: 18px; font-weight: 800; }
+  .o-sheet p { font-size: 14px; color: var(--muted); line-height: 1.55; word-break: keep-all; }
+  .o-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .o-pick button { padding: 14px 12px; border: 1.5px solid var(--line); border-radius: 12px; font-weight: 700; font-size: 15px; background: #fff; text-align: left; display: flex; justify-content: space-between; gap: 6px; }
+  .o-pick button.sel { border-color: var(--gold); background: var(--gold-bg); }
+  .o-pick button small { font-size: 11px; color: var(--muted); font-weight: 600; }
+  .o-toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: #fff; padding: 12px 18px; border-radius: 12px; font-weight: 600; font-size: 14px; z-index: 80; max-width: calc(100% - 32px); }
 </style>
 </head>
 <body>
+<div id="online" hidden></div>
 
 <div id="app">
   <header class="app-header">
@@ -1384,6 +1494,7 @@ function beginRound(){
   $('roundScreen').classList.remove('fade-in');
   void $('roundScreen').offsetWidth;
   $('roundScreen').classList.add('fade-in');
+  saveGame();
 }
 
 function pickAbilities(){
@@ -1498,22 +1609,25 @@ function drawTopic(){
   show($('assignBtn'));
   show($('rerollTopicBtn'));
   updateRerollButton();
+  saveGame();
 }
 
 function pickUnusedTopic(){
-  const mode = state.mode;
-
+  return pickTopic(state.mode, { ox: state.usedOxIdx, choice: state.usedChoiceIdx, strange: state.usedStrangeIdx });
+}
+// 모드와 이미 쓴 번호(Set)로 주제 하나 뽑기. 뽑은 번호는 used에 추가 (온라인 모드도 같이 씀)
+function pickTopic(mode, used){
   // 모드별 가능한 풀 구성
   let pools = []; // [{name, total, used, type}, ...]
 
   if (mode === 'basic' || mode === 'mixed'){
-    const oxLeft = OX_TOPICS.length - state.usedOxIdx.size;
-    const chLeft = CHOICE_TOPICS.length - state.usedChoiceIdx.size;
+    const oxLeft = OX_TOPICS.length - used.ox.size;
+    const chLeft = CHOICE_TOPICS.length - used.choice.size;
     if (oxLeft > 0) pools.push({ name: 'ox', left: oxLeft });
     if (chLeft > 0) pools.push({ name: 'choice', left: chLeft });
   }
   if (mode === 'strange' || mode === 'mixed'){
-    const stLeft = STRANGE_TOPICS.length - state.usedStrangeIdx.size;
+    const stLeft = STRANGE_TOPICS.length - used.strange.size;
     if (stLeft > 0) pools.push({ name: 'strange', left: stLeft });
   }
 
@@ -1529,21 +1643,21 @@ function pickUnusedTopic(){
   }
 
   if (chosen.name === 'ox'){
-    const idx = pickUnusedIndex(OX_TOPICS.length, state.usedOxIdx);
-    state.usedOxIdx.add(idx);
-    return { type: 'ox', question: OX_TOPICS[idx] };
+    const idx = pickUnusedIndex(OX_TOPICS.length, used.ox);
+    used.ox.add(idx);
+    return { type: 'ox', question: OX_TOPICS[idx], pool: 'ox', idx };
   }
   if (chosen.name === 'choice'){
-    const idx = pickUnusedIndex(CHOICE_TOPICS.length, state.usedChoiceIdx);
-    state.usedChoiceIdx.add(idx);
+    const idx = pickUnusedIndex(CHOICE_TOPICS.length, used.choice);
+    used.choice.add(idx);
     const t = CHOICE_TOPICS[idx];
-    return { type: 'choice', question: t[0], leftChoice: t[1], rightChoice: t[2] };
+    return { type: 'choice', question: t[0], leftChoice: t[1], rightChoice: t[2], pool: 'choice', idx };
   }
   if (chosen.name === 'strange'){
-    const idx = pickUnusedIndex(STRANGE_TOPICS.length, state.usedStrangeIdx);
-    state.usedStrangeIdx.add(idx);
+    const idx = pickUnusedIndex(STRANGE_TOPICS.length, used.strange);
+    used.strange.add(idx);
     const t = STRANGE_TOPICS[idx];
-    return { type: 'choice', question: t[0], leftChoice: t[1], rightChoice: t[2] };
+    return { type: 'choice', question: t[0], leftChoice: t[1], rightChoice: t[2], pool: 'strange', idx };
   }
   return null;
 }
@@ -1649,12 +1763,14 @@ function assignTeams(){
   hide($('assignBtn'));
   show($('finishBtn'));
   show($('reshuffleBtn'));
+  saveGame();
 }
 
 // 같은 멤버 그대로, 좌·우만 다시 랜덤 배정
 function reshuffleTeams(){
   shuffleAndAssignTeams();
   // 버튼 상태 변경 없음 — 현재 단계 유지
+  saveGame();
 }
 
 // 왕/멤버/능력 그대로, 주제만 새로 뽑기
@@ -1669,6 +1785,7 @@ function rerollTopic(){
   state.currentTopic = topic;
   renderTopic();
   updateRerollButton();
+  saveGame();
 }
 
 function updateRerollButton(){
@@ -1859,6 +1976,51 @@ function resetToSetup(){
   hide($('resetBtn'));
   renderNameInputs(initialNames());
   setMode('basic');
+  saveGame();
+}
+
+/* ============================================================
+   저장 / 이어하기: 새로고침(아래로 당겨 새로고침 포함)해도 진행 중인 게임 유지
+   타이머는 저장하지 않음 (다시 ▶ 누르면 됨)
+============================================================ */
+const SAVE_KEY = 'kingsolomon_game';
+function saveGame(){
+  try {
+    if (state.phase === 'setup'){ localStorage.removeItem(SAVE_KEY); return; }
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      participants: state.participants, kingIndex: state.kingIndex, round: state.round, mode: state.mode,
+      usedOx: [...state.usedOxIdx], usedChoice: [...state.usedChoiceIdx], usedStrange: [...state.usedStrangeIdx],
+      currentTopic: state.currentTopic, leftTeam: state.leftTeam, rightTeam: state.rightTeam,
+      abilities: state.abilities, phase: state.phase
+    }));
+  } catch(e){}
+}
+function restoreGame(){
+  let s = null;
+  try { s = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); } catch(e){}
+  if (!s || !Array.isArray(s.participants) || s.participants.length < MIN_PLAYERS || !s.phase || s.phase === 'setup') return false;
+  Object.assign(state, {
+    participants: s.participants, kingIndex: s.kingIndex, round: s.round, mode: s.mode || 'basic',
+    usedOxIdx: new Set(s.usedOx || []), usedChoiceIdx: new Set(s.usedChoice || []), usedStrangeIdx: new Set(s.usedStrange || []),
+    currentTopic: s.currentTopic || null, leftTeam: s.leftTeam || [], rightTeam: s.rightTeam || [],
+    abilities: s.abilities || pickAbilities(), phase: s.phase
+  });
+  setMode(state.mode);
+  hide($('setupScreen'));
+  show($('roundScreen'));
+  show($('roundBadge'));
+  show($('resetBtn'));
+  updateModeChip();
+  $('roundNum').textContent = state.round;
+  $('kingName').textContent = state.participants[state.kingIndex];
+  renderAbilities();
+  renderTopic();
+  renderTeams();
+  const p = state.phase;
+  [['drawTopicBtn', p === 'round-idle'], ['assignBtn', p === 'round-topic'], ['rerollTopicBtn', p !== 'round-idle'],
+   ['finishBtn', p === 'round-assigned'], ['reshuffleBtn', p === 'round-assigned']].forEach(([id, on]) => on ? show($(id)) : hide($(id)));
+  updateRerollButton();
+  return true;
 }
 
 /* ============================================================
@@ -1868,8 +2030,237 @@ function init(){
   renderNameInputs(initialNames());
   updateFsBtn();
   setMode('basic');  // 기본 모드 표시
+  restoreGame();
 }
 init();
+</script>
+<script>
+/* ============================================================
+   온라인 모드: 말랑월드에서 넘어왔을 때만 (쿼리 room·sid·uid). 각자 폰으로 같은 화면을 봄
+   DB(kwangbban) solomon/h{room}: {hubSid, hostId, phase(lobby|round), mode, round, king(uid),
+     players{uid:{name,at,on}}, devices{uid:{name,on}}, used{ox|choice|strange:{번호:1}}(나온 주제, 방에서 계속 이어짐),
+     abil[이번 라운드 능력 = ABILITIES 번호 2개], spent{0|1:1}(쓴 능력), topic, left[uid], right[uid],
+     fx{id:{a(ABILITIES 번호), to(uid|'all'), until(서버 시각, 0이면 왕이 풀 때까지)}}(내려진 명령)}
+   진행(주제·진영·능력·다음 왕)은 왕 폰에서. 왕이 연결이 끊겨 있으면 방장이 대신
+============================================================ */
+const HQ = new URLSearchParams(location.search);
+const HUB = HQ.get('room') && HQ.get('sid') && HQ.get('uid') ? {
+  room: HQ.get('room'), sid: HQ.get('sid'), uid: HQ.get('uid'),
+  name: (HQ.get('name') || '').trim().slice(0, 14) || '플레이어', host: HQ.get('host') === '1', dev: HQ.get('device') === '1'
+} : null;
+const FB_CFG = { apiKey: "AIzaSyBaauEuyH2Aaf4cRSHKtoWCVhFPhGq5CNU", authDomain: "kwangbban.firebaseapp.com",
+  databaseURL: "https://kwangbban-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "kwangbban",
+  storageBucket: "kwangbban.firebasestorage.app", messagingSenderId: "261966761423", appId: "1:261966761423:web:35de2dbe04ac2f084d56ba" };
+const MODES = [['basic', '💬', '기본', '가벼운 일상 주제'], ['strange', '🔥', '이상한 토론', '시나리오·사망토론 (도발적)'], ['mixed', '🎲', '전체 섞기', '기본 + 이상한 토론 랜덤']];
+// 능력 종류: 다같이(모두에게) / 지목(한 명). 시간 없는 지목은 팀 보내기(실제로 옮김) 또는 왕이 풀 때까지
+const abWho = ab => ab.label.startsWith('다같이') ? 'all' : 'one';
+const abKind = ab => ab.seconds > 0 ? 'timer' : ab.text.includes('다른 팀') ? 'move' : 'hold';
+
+let R = null, ref = null, skew = 0, joined = false, lastRound, waitMsg = '', fxSig = '';
+const sv = () => Date.now() + skew;
+const obj = v => v && typeof v === 'object' ? v : {};
+const arr = v => Array.isArray(v) ? v.filter(x => x != null) : v && typeof v === 'object' ? Object.values(v) : [];
+const pids = () => Object.keys(obj(R.players)).sort((a, b) => (R.players[a].at || 0) - (R.players[b].at || 0));
+const pname = u => (obj(R.players)[u] || {}).name || '?';
+const isKing = () => R.king === HUB.uid;
+const kingAway = () => !(obj(R.players)[R.king] || {}).on;
+const canRun = () => !HUB.dev && (isKing() || (R.hostId === HUB.uid && kingAway()));
+const sideOf = u => arr(R.left).includes(u) ? 'left' : arr(R.right).includes(u) ? 'right' : '';
+const sideName = s => !R.topic ? (s === 'left' ? '좌측 진영' : '우측 진영')
+  : R.topic.type === 'choice' ? (s === 'left' ? R.topic.leftChoice : R.topic.rightChoice) : (s === 'left' ? 'O · 찬성' : 'X · 반대');
+const tx = f => ref.transaction(r => { if (!r || r.hubSid !== HUB.sid || f(r) === false) return; return r; });
+// 지금 살아 있는 명령 (시간 지난 건 빼고)
+const liveFx = () => Object.entries(obj(R && R.fx)).filter(([, f]) => !f.until || f.until > sv());
+const remain = ms => formatTime(Math.max(0, Math.ceil(ms / 1000)));
+
+function oToast(msg){
+  let el = document.querySelector('.o-toast');
+  if (!el){ el = document.createElement('div'); el.className = 'o-toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); }
+  el.textContent = msg; el.hidden = false;
+  clearTimeout(oToast.t); oToast.t = setTimeout(() => { el.hidden = true; }, 2400);
+}
+// 아래에서 올라오는 창. [data-ok]를 누르면 onOk(선택값), [data-no]나 바깥을 누르면 닫힘
+function oSheet(html, onOk){
+  const dim = document.createElement('div'); dim.className = 'o-sheet-dim';
+  dim.innerHTML = `<div class="o-sheet" role="dialog" aria-modal="true">${html}</div>`;
+  let pick = null;
+  const close = () => dim.remove();
+  dim.addEventListener('click', e => {
+    if (e.target === dim || e.target.closest('[data-no]')) return close();
+    const p = e.target.closest('[data-pick]');
+    if (p){ pick = p.dataset.pick; dim.querySelectorAll('[data-pick]').forEach(b => b.classList.toggle('sel', b === p)); dim.querySelector('[data-ok]').disabled = false; return; }
+    if (e.target.closest('[data-ok]')){ close(); onOk(pick); }
+  });
+  document.body.appendChild(dim);
+}
+const playerPicker = (list, sub) => `<div class="o-pick">${list.map(u => `<button data-pick="${u}">${escapeHtml(pname(u))}${sub(u) ? `<small>${sub(u)}</small>` : ''}</button>`).join('')}</div>`;
+
+const loadJS = src => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.appendChild(s); });
+async function onlineStart(){
+  document.documentElement.classList.add('online');
+  $('app').style.display = 'none';
+  $('online').hidden = false;
+  oRender();
+  try { const v = 'https://www.gstatic.com/firebasejs/10.12.2/'; await loadJS(v + 'firebase-app-compat.js'); await loadJS(v + 'firebase-database-compat.js'); }
+  catch(e){ waitMsg = '연결하지 못했어요. 새로고침해 주세요.'; return oRender(); }
+  firebase.initializeApp(FB_CFG); const db = firebase.database();
+  ref = db.ref('solomon/h' + HUB.room);
+  db.ref('.info/serverTimeOffset').on('value', s => { skew = s.val() || 0; });
+  ref.on('value', s => { R = s.val(); onRoom(); });
+  // 방장: 방이 없거나 예전 판이면 새로 (나왔던 주제는 이어받음), 이번 판이면 그대로(새로고침)
+  if (HUB.host) ref.transaction(r => { if (r && r.hubSid === HUB.sid) return;
+    return { hubSid: HUB.sid, hostId: HUB.uid, phase: 'lobby', mode: (r && r.mode) || 'basic', round: 0, used: (r && r.used) || null, created: Date.now() }; });
+  db.ref('.info/connected').on('value', s => { if (s.val() && joined) join(); });
+  setInterval(tick, 300);
+}
+function join(){
+  const me = ref.child((HUB.dev ? 'devices/' : 'players/') + HUB.uid);
+  me.onDisconnect().update({ on: false });
+  me.transaction(v => Object.assign(v || { at: Date.now() }, { name: HUB.name, on: true }));
+}
+function onRoom(){
+  if (!R || R.hubSid !== HUB.sid){ R = null; joined = false; return oRender(); }
+  if (!joined){ joined = true; join(); }
+  if (lastRound !== undefined && R.phase === 'round' && R.round !== lastRound) showTransition(pname(R.king), () => {});
+  lastRound = R.round;
+  oRender();
+}
+// 남은 시간 글자 갱신 + 명령이 끝나면 화면 다시 그리기 (끝난 명령은 진행하는 폰이 지움)
+function tick(){
+  if (!R) return;
+  document.querySelectorAll('[data-until]').forEach(el => { el.textContent = remain(+el.dataset.until - sv()); });
+  const sig = liveFx().map(([id]) => id).join();
+  if (sig !== fxSig){ fxSig = sig; oRender(); }
+  if (canRun()) Object.entries(obj(R.fx)).forEach(([id, f]) => { if (f.until && f.until < sv() - 1500) ref.child('fx/' + id).remove(); });
+}
+
+/* ----- 진행 ----- */
+function newRound(r, king){
+  r.king = king; r.round = (r.round || 0) + 1;
+  r.abil = shuffle(ABILITIES.map((_, i) => i)).slice(0, 2);
+  ['spent', 'topic', 'left', 'right', 'fx'].forEach(k => delete r[k]);
+}
+function oMode(m){ if (R.hostId === HUB.uid && R.phase === 'lobby') ref.child('mode').set(m); }
+function oStart(){
+  if (R.hostId !== HUB.uid || R.phase !== 'lobby') return;
+  if (pids().length < MIN_PLAYERS) return oToast(`${MIN_PLAYERS}명 이상 모여야 시작할 수 있어요`);
+  tx(r => { if (r.phase !== 'lobby') return false; const ps = Object.keys(obj(r.players)); r.round = 0; newRound(r, ps[randInt(ps.length)]); r.phase = 'round'; });
+}
+function oLobby(){
+  oSheet(`<h3>대기실로 돌아갈까요?</h3><p>지금 라운드는 끝나요. 나왔던 주제는 다음에도 안 나와요.</p><button class="o-btn" data-ok>대기실로</button><button class="o-btn ghost" data-no>취소</button>`,
+    () => tx(r => { r.phase = 'lobby'; r.round = 0; ['king', 'abil', 'spent', 'topic', 'left', 'right', 'fx'].forEach(k => delete r[k]); }));
+}
+const usedSets = r => { const u = obj(r.used), s = k => new Set(Object.keys(obj(u[k])).map(Number)); return { ox: s('ox'), choice: s('choice'), strange: s('strange') }; };
+// 주제 뽑기와 "다른 주제로"는 같은 동작
+function oDraw(){
+  if (!canRun()) return;
+  if (!pickTopic(R.mode || 'basic', usedSets(R))) return oToast('더 뽑을 수 있는 주제가 없어요');
+  tx(r => {
+    const t = pickTopic(r.mode || 'basic', usedSets(r)); if (!t) return false;
+    const u = obj(r.used); u[t.pool] = Object.assign(obj(u[t.pool]), { [t.idx]: 1 }); r.used = u; r.topic = t;
+  });
+}
+// 진영 배정·다시 섞기: 왕 빼고 접속 중인 사람을 반반
+function oAssign(){
+  if (!canRun()) return;
+  tx(r => {
+    if (!r.topic) return false;
+    const s = shuffle(Object.keys(obj(r.players)).filter(u => u !== r.king && r.players[u].on !== false)), h = Math.ceil(s.length / 2);
+    let a = s.slice(0, h), b = s.slice(h); if (Math.random() < 0.5) [a, b] = [b, a];
+    r.left = a; r.right = b;
+  });
+}
+function oUse(i){
+  const a = ABILITIES[arr(R.abil)[i]];
+  if (!a || !canRun() || obj(R.spent)[i]) return;
+  const head = `<small class="chip gold" style="align-self:flex-start">${escapeHtml(a.label)}</small><h3>${escapeHtml(a.text)}</h3>`;
+  if (abWho(a) === 'all')
+    return oSheet(`${head}<p>모두의 화면에 ${a.seconds ? `${formatTime(a.seconds)} 동안` : ''} 떠 있어요.</p><button class="o-btn gold" data-ok>명령 내리기</button><button class="o-btn ghost" data-no>취소</button>`, () => fire(i, 'all'));
+  const k = abKind(a);
+  const list = pids().filter(u => u !== R.king && (k !== 'move' || sideOf(u)));
+  if (k === 'move' && !list.length) return oToast('진영을 배정한 뒤에 쓸 수 있어요');
+  const msg = k === 'timer' ? `고른 사람 화면에 ${formatTime(a.seconds)} 동안 떠 있어요.` : k === 'move' ? '고른 사람은 반대 진영으로 옮겨져요.' : '고른 사람 화면에 내가 풀어줄 때까지 떠 있어요.';
+  oSheet(`${head}<p>누구에게 내릴까요? ${msg}</p>${playerPicker(list, u => sideOf(u) ? sideName(sideOf(u)) : '')}<button class="o-btn gold" data-ok disabled>명령 내리기</button><button class="o-btn ghost" data-no>취소</button>`, to => fire(i, to));
+}
+function fire(i, to){
+  if (!to) return;
+  tx(r => {
+    const ai = arr(r.abil)[i], a = ABILITIES[ai], k = abKind(a), sp = obj(r.spent);
+    if (!a || sp[i]) return false;
+    if (k === 'move'){
+      const L = arr(r.left), Rt = arr(r.right);
+      if (L.includes(to)){ r.left = L.filter(x => x !== to); r.right = Rt.concat(to); }
+      else if (Rt.includes(to)){ r.right = Rt.filter(x => x !== to); r.left = L.concat(to); }
+      else return false;
+    }
+    sp[i] = 1; r.spent = sp;
+    const fx = obj(r.fx);
+    fx['f' + Date.now().toString(36)] = { a: ai, to, until: k === 'timer' ? sv() + a.seconds * 1000 : k === 'move' ? sv() + 5000 : 0 };
+    r.fx = fx;
+  });
+}
+function oRelease(id){ if (canRun()) ref.child('fx/' + id).remove(); }
+function oNextKing(){
+  if (!canRun()) return;
+  const round = R.round;
+  oSheet(`<span class="chip gold" style="align-self:flex-start">👑 다음 왕 선택</span><h3>가장 잘한 사람은 누구인가요?</h3><p>고른 사람이 다음 라운드의 왕이 돼요.</p>
+    ${playerPicker(pids(), u => u === R.king ? '현재 왕' : '')}<button class="o-btn gold" data-ok disabled>왕으로 임명</button><button class="o-btn ghost" data-no>취소</button>`,
+    u => { if (u) tx(r => { if (r.round !== round) return false; newRound(r, u); }); });
+}
+
+/* ----- 화면 ----- */
+function fxText(f){
+  const a = ABILITIES[f.a]; if (!a) return '';
+  if (abKind(a) === 'move') return `${pname(f.to)} → ${sideName(sideOf(f.to))} 진영으로 이동`;
+  return a.text;
+}
+const fxTime = (f, cls) => f.until ? `<span class="t ${cls || ''}" data-until="${f.until}">${remain(f.until - sv())}</span>` : `<span class="t hold ${cls || ''}">왕이 풀어줄 때까지</span>`;
+function oRender(){
+  const root = $('online');
+  const top = `<div class="o-top"><div class="logo-wrap"><div class="logo-mark">👑</div><div><div class="logo-title">킹 솔로몬</div><div class="logo-subtitle">밸런스 토론 · 방 ${escapeHtml(HUB.room)}</div></div></div>
+    ${R && R.phase === 'round' ? `<span class="round-badge">ROUND ${R.round}</span>` : ''}</div>`;
+  if (!R){
+    root.innerHTML = top + `<div class="o-hero"><div class="crown">👑</div><p>${waitMsg || (HUB.host ? '방을 여는 중…' : '방장을 기다리는 중…')}</p></div>`;
+    return;
+  }
+  root.innerHTML = top + (R.phase === 'round' ? roundView() : lobbyView());
+}
+function lobbyView(){
+  const host = R.hostId === HUB.uid, ps = pids(), devs = Object.values(obj(R.devices)).filter(d => d && d.on), mode = R.mode || 'basic';
+  return `<div class="o-hero"><div class="crown">👑</div><h1>킹 솔로몬</h1><p class="keep-all">오늘의 왕이 토론을 다스립니다.<br>좌·우 진영으로 나뉘어 토론하고, 가장 빛난 사람이 다음 왕이 돼요.</p></div>
+  <div class="o-card"><h2>참가자 ${ps.length}명 <small>${MIN_PLAYERS}명 이상</small></h2><div class="o-chips">${ps.map(u => `<span class="o-chip ${u === HUB.uid ? 'me' : ''} ${R.players[u].on === false ? 'off' : ''}">${escapeHtml(pname(u))}${u === R.hostId ? ' · 방장' : ''}</span>`).join('')}${devs.map(d => `<span class="o-chip dev">공용 화면 · ${escapeHtml(d.name || '')}</span>`).join('')}</div></div>
+  <div class="o-card"><h2>토론 모드 <small>${host ? '방장이 골라요' : ''}</small></h2><div class="o-modes">${MODES.map(([k, e, n, d]) => `<button class="o-mode ${mode === k ? 'on' : ''}" ${host ? '' : 'disabled'} onclick="oMode('${k}')"><span style="font-size:24px">${e}</span><span><b>${n}</b><span>${d}</span></span></button>`).join('')}</div></div>
+  ${host ? `<button class="o-btn gold" ${ps.length < MIN_PLAYERS ? 'disabled' : ''} onclick="oStart()">게임 시작 · 첫 왕은 랜덤</button>` : '<p class="o-note">방장이 시작하면 첫 왕이 랜덤으로 정해져요</p>'}`;
+}
+function roundView(){
+  const run = canRun(), king = isKing(), me = HUB.uid, mySide = sideOf(me), t = R.topic, teams = arr(R.left).length + arr(R.right).length > 0;
+  const fx = liveFx();
+  let h = '';
+  // 나에게 떨어진 명령 (모두에게 / 나에게). 왕과 공용 화면은 아래 목록으로 봄
+  if (!king && !HUB.dev) fx.filter(([, f]) => f.to === 'all' || f.to === me).forEach(([, f]) => {
+    h += `<div class="o-order" role="alert"><small>👑 왕의 명령 · ${f.to === 'all' ? '모두' : '나'}</small><b>${escapeHtml(fxText(f))}</b>${fxTime(f)}</div>`;
+  });
+  h += `<div class="o-card o-king"><span class="crown">👑</span><div class="who"><small>이번 라운드의 왕</small><b>${escapeHtml(pname(R.king))}${king ? ' (나)' : ''}</b></div></div>`;
+  h += t ? `<div class="o-card o-topic"><span class="chip ${t.type === 'ox' ? 'indigo' : 'amber'}">${t.type === 'ox' ? 'O / X' : 'A vs B'}</span><div class="q">${escapeHtml(t.question)}</div>
+      <div class="c"><span class="l">${escapeHtml(sideName('left'))}</span><span class="vs">VS</span><span class="r">${escapeHtml(sideName('right'))}</span></div></div>`
+    : `<div class="o-card o-topic empty">${run ? '아래 버튼으로 이번 라운드 주제를 뽑아 주세요' : '왕이 주제를 뽑는 중…'}</div>`;
+  if (mySide) h += `<div class="o-mine ${mySide}">나는 「${escapeHtml(sideName(mySide))}」 진영</div>`;
+  if (teams) h += `<div class="o-sides">${['left', 'right'].map(s => `<div class="o-side ${s}"><h3>${escapeHtml(sideName(s))}</h3><div class="o-chips">${arr(R[s]).map(u => `<span class="o-chip ${u === me ? 'me' : ''}">${escapeHtml(pname(u))}</span>`).join('')}</div></div>`).join('')}</div>`;
+  // 왕의 능력: 모두에게 보이고, 쓰는 건 진행하는 폰만
+  h += `<div class="o-card"><h2>왕의 능력 <small>각 1번 · 왕이 원할 때</small></h2>${arr(R.abil).map((ai, i) => { const a = ABILITIES[ai]; if (!a) return '';
+      const used = obj(R.spent)[i];
+      return `<div class="o-ab"><div class="tx"><small>${escapeHtml(a.label)}</small><b>${escapeHtml(a.text)}</b></div>${used ? '<span class="used">사용함</span>' : run ? `<button onclick="oUse(${i})">${abWho(a) === 'all' ? '명령' : '지목'}</button>` : ''}</div>`; }).join('')}
+    ${fx.map(([id, f]) => `<div class="o-fx"><span class="tx">${f.to === 'all' ? '모두' : escapeHtml(pname(f.to))} · ${escapeHtml(fxText(f))}</span>${fxTime(f)}${run ? `<button onclick="oRelease('${id}')">해제</button>` : ''}</div>`).join('')}</div>`;
+  if (run){
+    h += !t ? `<button class="o-btn" onclick="oDraw()">🎲 주제 뽑기</button>`
+      : !teams ? `<div class="o-row"><button class="o-btn ghost" onclick="oDraw()">🔄 다른 주제로</button><button class="o-btn gold" onclick="oAssign()">⚔️ 진영 배정</button></div>`
+      : `<div class="o-row"><button class="o-btn ghost" onclick="oDraw()">🔄 다른 주제로</button><button class="o-btn ghost" onclick="oAssign()">🔀 진영 다시 섞기</button></div><button class="o-btn gold" onclick="oNextKing()">토론 종료 · 다음 왕 선택</button>`;
+    if (!king) h += `<p class="o-note">왕이 자리를 비워서 방장이 대신 진행 중이에요</p>`;
+  } else h += `<p class="o-note">왕이 진행해요</p>`;
+  if (R.hostId === me) h += `<button class="btn btn-ghost" style="align-self:center" onclick="oLobby()">대기실로</button>`;
+  return h;
+}
+if (HUB) onlineStart();
 </script>
 <script src="https://kwangbban.vercel.app/hub.js" defer></script>
 </body>
