@@ -1283,13 +1283,16 @@ const ABILITIES = [
 /* ============================================================
    상태
 ============================================================ */
+// 나온 주제 번호는 게임이 끝나도 이 폰에 따로 저장 → 다시 하기/말랑월드에서 다시 켜도 다 쓸 때까지 안 나옴
+const USED_KEY = 'kingsolomon_used';
+const SAVED_USED = (() => { try { return JSON.parse(localStorage.getItem(USED_KEY) || 'null') || {}; } catch(e){ return {}; } })();
 const state = {
   participants: [],
   kingIndex: -1,
   round: 0,
-  usedOxIdx: new Set(),
-  usedChoiceIdx: new Set(),
-  usedStrangeIdx: new Set(),
+  usedOxIdx: new Set(SAVED_USED.ox || []),
+  usedChoiceIdx: new Set(SAVED_USED.choice || []),
+  usedStrangeIdx: new Set(SAVED_USED.strange || []),
   mode: 'basic',  // 'basic' | 'strange' | 'mixed'
   currentTopic: null,
   leftTeam: [],
@@ -1448,9 +1451,7 @@ function startGame(names){
   state.participants = names.slice();
   state.kingIndex = randInt(names.length);
   state.round = 0;
-  state.usedOxIdx = new Set();
-  state.usedChoiceIdx = new Set();
-  state.usedStrangeIdx = new Set();
+  // 나온 주제(usedOxIdx 등)는 새 게임에도 그대로 → 다 쓸 때까지 다시 안 나옴
 
   hide($('setupScreen'));
   show($('roundScreen'));
@@ -1616,7 +1617,7 @@ function pickUnusedTopic(){
   return pickTopic(state.mode, { ox: state.usedOxIdx, choice: state.usedChoiceIdx, strange: state.usedStrangeIdx });
 }
 // 모드와 이미 쓴 번호(Set)로 주제 하나 뽑기. 뽑은 번호는 used에 추가 (온라인 모드도 같이 씀)
-function pickTopic(mode, used){
+function pickTopic(mode, used, retried){
   // 모드별 가능한 풀 구성
   let pools = []; // [{name, total, used, type}, ...]
 
@@ -1631,7 +1632,12 @@ function pickTopic(mode, used){
     if (stLeft > 0) pools.push({ name: 'strange', left: stLeft });
   }
 
-  if (pools.length === 0) return null;
+  // 이 모드 주제를 다 썼으면 다시 섞어서 처음부터 (막히지 않게)
+  if (pools.length === 0){
+    if (mode !== 'strange'){ used.ox.clear(); used.choice.clear(); }
+    if (mode !== 'basic') used.strange.clear();
+    return retried ? null : pickTopic(mode, used, true);
+  }
 
   // 남은 개수 비율로 가중 랜덤 선택
   const totalLeft = pools.reduce((s, p) => s + p.left, 0);
@@ -1788,16 +1794,9 @@ function rerollTopic(){
   saveGame();
 }
 
+// 주제를 다 쓰면 pickTopic이 다시 섞어서 뽑으므로 "다른 주제로"는 막지 않음
 function updateRerollButton(){
-  let totalLeft = 0;
-  if (state.mode === 'basic' || state.mode === 'mixed'){
-    totalLeft += OX_TOPICS.length - state.usedOxIdx.size;
-    totalLeft += CHOICE_TOPICS.length - state.usedChoiceIdx.size;
-  }
-  if (state.mode === 'strange' || state.mode === 'mixed'){
-    totalLeft += STRANGE_TOPICS.length - state.usedStrangeIdx.size;
-  }
-  $('rerollTopicBtn').disabled = (totalLeft <= 0);
+  $('rerollTopicBtn').disabled = false;
 }
 
 function renderTeams(animate = false){
@@ -1960,9 +1959,6 @@ function resetToSetup(){
   state.participants = [];
   state.kingIndex = -1;
   state.round = 0;
-  state.usedOxIdx = new Set();
-  state.usedChoiceIdx = new Set();
-  state.usedStrangeIdx = new Set();
   state.currentTopic = null;
   state.leftTeam = [];
   state.rightTeam = [];
@@ -1986,6 +1982,7 @@ function resetToSetup(){
 const SAVE_KEY = 'kingsolomon_game';
 function saveGame(){
   try {
+    localStorage.setItem(USED_KEY, JSON.stringify({ ox: [...state.usedOxIdx], choice: [...state.usedChoiceIdx], strange: [...state.usedStrangeIdx] }));
     if (state.phase === 'setup'){ localStorage.removeItem(SAVE_KEY); return; }
     localStorage.setItem(SAVE_KEY, JSON.stringify({
       participants: state.participants, kingIndex: state.kingIndex, round: state.round, mode: state.mode,
@@ -2156,8 +2153,10 @@ function oDraw(){
   if (!canRun()) return;
   if (!pickTopic(R.mode || 'basic', usedSets(R))) return oToast('더 뽑을 수 있는 주제가 없어요');
   tx(r => {
-    const t = pickTopic(r.mode || 'basic', usedSets(r)); if (!t) return false;
-    const u = obj(r.used); u[t.pool] = Object.assign(obj(u[t.pool]), { [t.idx]: 1 }); r.used = u; r.topic = t;
+    const us = usedSets(r), t = pickTopic(r.mode || 'basic', us); if (!t) return false;
+    const u = obj(r.used);
+    ['ox', 'choice', 'strange'].forEach(k => { if (us[k].size < Object.keys(obj(u[k])).length) delete u[k]; }); // 다 써서 다시 섞은 풀은 비우기
+    u[t.pool] = Object.assign(obj(u[t.pool]), { [t.idx]: 1 }); r.used = u; r.topic = t;
   });
 }
 // 진영 배정·다시 섞기: 왕 빼고 접속 중인 사람을 반반
